@@ -1,0 +1,328 @@
+# i3 config file (v4)
+#common{{{1
+# Please see http://i3wm.org/docs/userguide.html for a complete reference!
+
+# set $mod Mod1
+set $mod Mod4
+
+# Font for window titles. Will also be used by the bar unless a different font
+# is used in the bar {} block below. ISO 10646 = Unicode
+# font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+#WenQuanYi Micro Hei Mono,文泉驛等寬微米黑,文泉驿等宽微米黑:style=Regular
+# font xft:Wen Quan Yi Zen Hei Mono 10
+font xft:FZ Shu Song 10
+# clear in small sizes. However, if you need a lot of unicode glyphs or
+# right-to-left text rendering, you should instead use pango for rendering and
+# chose a FreeType font, such as:
+# font pango:DejaVu Sans Mono 10
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+workspace_layout tabbed
+
+# class                 border  backgr. text    indicator
+client.focused          #4c7899 #285577 #ffffff #2e9ef4
+#client.focused          #4c7899 #33b5e5 #ffffff #2e9ef4
+client.focused_inactive #333333 #5f676a #ffffff #484e50
+client.unfocused        #333333 #222222 #888888 #292d2e
+client.urgent           #2f343a #900000 #ffffff #900000
+#}}}
+
+#focus {{{1
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# focus the child container
+#bindsym $mod+d focus child
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+#}}}
+
+#workspace control{{{1
+# split in horizontal orientation
+bindsym $mod+o split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+bindsym $mod+shift+Right exec i3-msg 'move workspace to output left'
+bindsym $mod+shift+Left exec i3-msg 'move workspace to output right'
+
+# switch to workspace
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+# switch between the current and the previously focused one
+# workspace_auto_back_and_forth yes
+# bindsym mod+Minus workspace back_and_forth
+#}}}
+
+#windows control{{{1
+# bindsym $mod+Tab workspace back_and_forth
+# bindsym Tab+Alt exec --no-startup-id ~/bin/i3wm/i3previous.sh
+bindsym $mod+backslash exec --no-startup-id ~/bin/i3wm/i3previous.sh
+bindsym $mod+Tab exec --no-startup-id ~/bin/i3wm/i3previous.sh
+
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# alternatively, you can use the cursor keys:
+# bindsym $mod+Shift+Left move left
+# bindsym $mod+Shift+Down move down
+# bindsym $mod+Shift+Up move up
+# bindsym $mod+Shift+Right move right
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# kill focused window
+bindsym $mod+Shift+q kill
+
+# move the currently focused window to the scratchpad
+bindsym $mod+Shift+minus move scratchpad
+
+# Show the next scratchpad window or hide the focused scratchpad window.
+# If there are multiple scratchpad windows, this command cycles through them.
+bindsym $mod+minus scratchpad show
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        # Pressing left will shrink the window’s width.
+        # Pressing right will grow the window’s width.
+        # Pressing up will shrink the window’s height.
+        # Pressing down will grow the window’s height.
+        bindsym l resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym h resize grow width 10 px or 10 ppt
+
+        # same bindings, but for the arrow keys
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape
+        bindsym Return mode "default"
+        bindsym Caps_Lock mode "default"
+}
+
+bindsym $mod+r mode "resize"
+#}}}
+
+#key maps{{{1
+# start dmenu (a program launcher)
+# bindsym $mod+d exec dmenu_run
+# There also is the (new) i3-dmenu-desktop which only displays applications
+# shipping a .desktop file. It is a wrapper around dmenu, so you need that
+# installed.
+bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
+bindsym $mod+shift+d exec --no-startup-id dmenu_run
+
+# start a terminal
+bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+g exec --no-startup-id google-chrome-stable %U
+# bindsym $mod+g exec --no-startup-id google-chrome-stable --disk-cache-dir="/tmp/chrome/" %U
+# bindsym $mod+g exec --no-startup-id firefox -new-window
+bindsym $mod+i exec --no-startup-id gvim
+bindsym $mod+t exec --no-startup-id ~/bin/PersonalSystem/countdown.py
+bindsym $mod+period exec --no-startup-id goldendict
+bindsym $mod+p exec --no-startup-id pcmanfm
+
+
+
+# set $mode_system System (l) lock, (e) logout, (r) reboot, (Shift+s) shutdown
+mode "$mode_system" {
+    # reload the configuration file
+    bindsym c exec --no-startup-id "i3-msg reload"
+    # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+    # bindsym l exec --no-startup-id i3exit.sh lock, mode "default"
+    # bindsym e exec --no-startup-id i3exit.sh logout, mode "default"
+    bindsym e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'", mode "default"
+    
+    bindsym l exec --no-startup-id lxsession-logout
+    
+    # bindsym r exec "i3-nagbar -t warning -m 'You pressed the reboot shortcut. Do you really want to reboot?' -b 'Yes, reboot' 'i3-msg exec --no-startup-id ~/bin/i3wm/i3exit.sh reboot'", mode "default"
+    # bindsym s exec "i3-nagbar -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown?' -b 'Yes, shutdown' 'i3-msg exec --no-startup-id ~/bin/i3wm/i3exit.sh shutdown'", mode "default"
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+Home mode "$mode_system"
+#}}}
+
+#i3bar{{{1
+# Start i3bar to display a workspace bar (plus the system information i3status
+# finds out, if available)
+bar {
+        position top
+        # status_command ~/bin/i3wm/i3status.sh
+        status_command ~/bin/i3wm/py3status.sh
+        # status_command i3status
+        # mode hide
+        # hidden_state hide
+        # modifier $mod
+
+        colors {
+        background #000000
+        statusline #ffffff
+
+        focused_workspace  #4c7899 #285577 #ffffff
+        active_workspace   #333333 #5f676a #ffffff
+        inactive_workspace #333333 #222222 #888888
+        urgent_workspace   #2f343a #900000 #ffffff
+    }
+}
+#}}}
+
+#jump{{{1
+# mark current window
+# bindsym $mod+m exec i3-input -F 'mark %s' -l 1 -P 'Mark: '
+# goto mark
+# bindsym $mod+apostrophe exec i3-input -F '[con_mark="%s"] focus' -l 1 -P 'Go to: '
+#name/jump
+bindsym $mod+Shift+v exec python ~/bin/i3wm/i3-wm-scripts/nextmatch.py vim
+bindsym $mod+Shift+w exec python ~/bin/i3wm/i3-wm-scripts/nextmatch.py WorkFlowy
+# bindsym $mod+Shift+w exec python ~/bin/i3-wm-scripts/nextmatch.py 'WorkFlowy(chrome|firefox)'
+bindsym $mod+Shift+t exec python ~/bin/i3wm/i3-wm-scripts/nextmatch.py terminal
+# bindsym $mod+Shift+p exec python ~/bin/i3wm/i3-wm-scripts/nextmatch.py Paymo
+# bindsym $mod+Shift+e exec python ~/bin/i3wm/i3-wm-scripts/nextmatch.py double
+
+# bindsym $mod+slash exec python ~/bin/i3-wm-scripts/nextfind.py
+# bindsym $mod+slash exec quickswitch.py
+bindsym $mod+slash exec /opt/bin/i3wm/env/bin/python ~/bin/i3wm/i3-py/examples/winmenu.py
+bindsym $mod+m exec ~/bin/i3wm/i3-wm-scripts/mark
+bindsym $mod+apostrophe exec ~/bin/i3wm/i3-wm-scripts/goto
+#}}}
+
+##X mapper{{{1
+#
+## bindsym XF86AudioMute exec --no-startup-id amixer -q set Master toggle
+#bindsym XF86AudioMute exec --no-startup-id amixer -q -D pulse set Master toggle 
+## bindsym XF86AudioRaiseVolume exec amixer -q set Master 2dB+ unmute
+## bindsym XF86AudioLowerVolume exec amixer -q set Master 2dB- unmute
+#bindsym XF86AudioLowerVolume exec amixer -q -D pulse set Master 5%- unmute
+#bindsym XF86AudioRaiseVolume exec amixer -q -D pulse set Master 5%+ unmute
+## bindsym XF86AudioMicMute exec --no-startup-id 
+#
+bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 10
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
+#bindsym XF86ScreenSaver exec --no-startup-id i3lock -c 000000
+## bindsym XF86Explorer exec --no-startup-id 
+#
+## bindsym XF86Display
+#
+bindsym XF86Tools exec --no-startup-id /home/dersu/bin/i3wm/toggleTouchPad.sh
+## bindsym XF86Search exec --no-startup-id 
+## bindsym XF86LaunchA exec --no-startup-id 
+#
+#bindsym XF86Explorer exec --no-startup-id i3lock -c 000000
+
+#}}}
+
+#app control{{{1
+# for_window [class="task-indicator"] floating enable
+
+# for_window [title="."] exec --no-startup-id echo `date` >> /tmp/i3.log
+# bindsym $mod+m exec i3-input -F 'mark %s' -l 1 -P 'Mark: '
+# goto mark
+# bindsym $mod+apostrophe exec i3-input -F '[con_mark="%s"] focus' -l 1 -P 'Go to: '
+# for_window [class="Wine"] floating enable
+
+for_window [title="Countdown"] floating enable
+
+# for_window [title="Paymo Widget"] floating enable
+# [window_role="pop-up"] floating enable
+
+# assign [title="WorkFlowy"] 10
+
+# for_window [class="Skype"] floating enable
+
+# assign [title="win7 [Running] - Oracle VM VirtualBox"] 8
+# for_window [title="win7 [Running] - Oracle VM VirtualBox"] floating enable
+# assign [class="Skype"] 9
+# assign [title=".*TimeCamp.*"] 9
+
+# Wechat
+# assign [instance="^crx_nhfpmejnhjogpdnlhmmpmgcfkaaedphf$"] 9
+# # slack
+# assign [instance="^crx_emhamhjafffmjoakkmnacgikmgjdfjgp$"] 9
+# # QQ
+# assign [instance="^crx_cdjkcojeaafchhgimnipgmdjhjlifbmd$"] 9
+
+# timecamp
+# assign [instance="^crx_bmdpodfpmmoaamkjjfgkpfohcicjemeh$"] 10
+# workflowy
+# assign [instance="^crx_koegeopamaoljbmhnfjbclbocehhgmkm$"] 10
+
+#}}}
+
+#auto run{{{1
+#exec --no-startup-id "pactl load-module module-switch-on-connect"
+exec --no-startup-id /home/dersu/bin/i3wm/toggleTouchPad.sh
+#exec --no-startup-id /home/dersu/bin/i3wm/synaptis.sh
+exec --no-startup-id xbacklight -set 50
+#
+exec --no-startup-id /usr/bin/fcitx
+exec --no-startup-id nm-applet
+exec --no-startup-id blueman-applet
+## exec --no-startup-id update-notifier
+exec --no-startup-id xfce4-power-manager
+exec --no-startup-id rescuetime
+exec --no-startup-id workrave
+exec --no-startup-id "sleep 60s && gvfs-mount smb://da/sda1"
+## exec --no-startup-id "feh --bg-scale /home/dersu/NoSync/My Ent/cheatsheet.png"
+#
+exec --no-startup-id "~/bin/i3wm/i3previous-server.sh"
+exec --no-startup-id "i3-msg 'workspace 10; append_layout /home/dersu/.config/i3/workspace_10.json'"
+## exec --no-startup-id "i3-msg 'workspace 9; exec /usr/bin/google-chrome-stable --disk-cache-dir=/tmp/chrome/ --profile-directory=Default --app-id=emhamhjafffmjoakkmnacgikmgjdfjgp'"
+exec --no-startup-id "/home/dersu/bin/i3wm/workspace.sh"
+exec --no-startup-id i3-msg 'workspace 2; exec i3-sensible-terminal -e ranger.sh'
+#}}}

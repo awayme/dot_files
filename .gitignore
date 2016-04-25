@@ -1,0 +1,12 @@
+# Packaging
+*.pyc
+*.pyo
+*.egg-info
+
+# Temporary/OS files
+*.swp
+*.swo
+*.*~
+.~lock.*
+*.DS_Store
+
