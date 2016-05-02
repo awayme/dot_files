@@ -3,6 +3,7 @@ set fisher_config ~/.config/fisherman
 source $fisher_home/config.fish
 
 set -x EDITOR vim
+set -x LC_TIME 'en_US.UTF-8'
 
 fish_vi_mode
 
@@ -62,7 +63,7 @@ function vewebfront
 end
 
 function veemulator
-    cd ~/Data/My_Scripts/webemulator
+    cd ~/Data/scripts/webemulator
     ve
 end
 
@@ -72,13 +73,13 @@ end
 
 function calculator
     anaconda
-    cd ~/Data/My_Scripts/notebooks
+    cd ~/Data/scripts/notebooks
     jupyter-notebook calculator.ipynb
 end
 
 function notebook
     anaconda
-    cd ~/Data/My_Scripts/notebooks
+    cd ~/Data/scripts/notebooks
     jupyter-notebook
 end
 
@@ -86,6 +87,16 @@ function mosht
     mosh --no-init -- $argv tmux a -d
 end
 
-set -gx PATH $PATH /usr/local/heroku/bin
+set --local manpath_list ~/bin $PATH /usr/local/heroku/bin
+# remove duplicates from the list
+set --local manpath_sorted
+for i in $manpath_list
+    if not contains $i $manpath_sorted
+        set manpath_sorted $manpath_sorted $i
+    end
+end
+
+set -gx PATH $manpath_sorted
+# set -gx PATH ~/bin $PATH /usr/local/heroku/bin
 
 # eval (thefuck --alias | tr '\n' ';')
