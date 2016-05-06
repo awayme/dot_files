@@ -1,0 +1,120 @@
+global !p
+def newsoa(delta=1):
+    #import datetime
+    from datetime import date, timedelta
+    #da = datetime.datetime.now()
+    da = date.today() - timedelta(delta)
+    # return standard SOA formatted serial for today
+    return da.strftime("%Y-%m-%d %A")
+
+def today_date_iso():
+    import datetime
+    now = datetime.datetime.now()
+    return now.strftime("%Y-%m-%d")
+
+def now_time():
+    import datetime
+    now = datetime.datetime.now()
+    return now.strftime("%H:%M")
+
+def time_stamp_iso():
+    import datetime
+    now = datetime.datetime.now()
+    return now.strftime("%Y-%m-%d %H:%M")
+
+endglobal
+
+snippet dlog "daily log" b
+`!p snip.rv = newsoa(0)` {{{
+${0}
+}}}}}}}}}}}}}}}}}}}}}}}}}}
+conflict/difficulty
+3 things/today's most important tasks
+1. SMART principle
+2. Estimate time-consuming
+每天浏览人生目标，确保每天都会做一些事来推进
+四象限定优先级
+==========================
+endsnippet
+
+snippet dlog1 "daily log" b
+`!p snip.rv = newsoa(1)` {{{
+mood:
+health:
+what made me happy:
+${0}
+}}}}}}}}}}}}}}}}}}}}}}}}}}
+conflict/difficulty
+3 things/today's most important tasks
+==========================
+endsnippet
+
+snippet dlog2 "daily log" b
+`!p snip.rv = newsoa(2)` {{{
+mood:
+health:
+what made me happy:
+${0}
+}}}}}}}}}}}}}}}}}}}}}}}}}}
+conflict/difficulty
+today's most important tasks
+==========================
+endsnippet
+
+snippet dlog3 "daily log" b
+`!p snip.rv = newsoa(3)` {{{
+mood:
+health:
+what made me happy:
+${0}
+}}}}}}}}}}}}}}}}}}}}}}}}}}
+conflict/difficulty
+today's most important tasks
+==========================
+endsnippet
+
+snippet dlog4 "daily log" b
+`!p snip.rv = newsoa(4)` {{{
+${0}
+mood:
+health:
+what made me happy:
+}}}}}}}}}}}}}}}}}}}}}}}}}}
+conflict/difficulty
+today's most important tasks
+==========================
+endsnippet
+
+snippet blog "blog" b
+Title: 
+Date: `!p snip.rv = time_stamp_iso()`
+Category: 
+Tags: 
+
+endsnippet
+
+
+snippet now "Now" b
+`!p snip.rv = time_stamp_iso()`
+endsnippet
+
+snippet shell "scrapy" b
+from scrapy.shell import inspect_response
+# from scrapy.utils.response import open_in_browser
+inspect_response(response, self)
+endsnippet
+
+snippet opdb "openinbrowser" b
+from scrapy.utils.response import open_in_browser
+import pdb; pdb.set_trace()
+open_in_browser(response)
+endsnippet
+
+snippet dreminder "debugflag" b
+#@TODO:REMOVE DEBUG
+endsnippet
+
+snippet strftime "import now and format" b
+from datetime import datetime
+datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+endsnippet

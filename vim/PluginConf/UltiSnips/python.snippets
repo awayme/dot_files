@@ -1,0 +1,26 @@
+priority 1
+
+snippet pdb "pdb" b
+import pdb; pdb.set_trace()
+endsnippet
+
+snippet shell "scrapy" b
+from scrapy.shell import inspect_response
+# from scrapy.utils.response import open_in_browser
+inspect_response(response, self)
+endsnippet
+
+snippet opdb "openinbrowser" b
+from scrapy.utils.response import open_in_browser
+import pdb; pdb.set_trace()
+open_in_browser(response)
+endsnippet
+
+snippet dreminder "debugflag" b
+#@TODO:REMOVE DEBUG
+endsnippet
+
+snippet strftime "import now and format" b
+from datetime import datetime
+datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+endsnippet

@@ -1,0 +1,16 @@
+set shell=/bin/bash
+
+let $MyVIMPath='/home/dersu/Data/Vim/'
+"let $HOME=$MyVIMPath.'home_linux'
+
+let $MyVIMFiles=$MyVIMPath.'vimfiles/'
+let $MyVIMFiles_After=$MyVIMFiles.'after/' 
+
+let BufferDir = "/home/dersu/Backup/VimBuffer/"
+
+function! MySys()
+    return "linux"
+endfunction
+
+runtime! debian.vim
+source $MyVIMPath/_vimrc.common

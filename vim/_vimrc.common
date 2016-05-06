@@ -1,0 +1,582 @@
+" Identify platform {
+    silent function! OSX()
+        return has('macunix')
+    endfunction
+    silent function! LINUX()
+        return has('unix') && !has('macunix') && !has('win32unix')
+    endfunction
+    silent function! WINDOWS()
+        return  (has('win32') || has('win64'))
+    endfunction
+" }
+
+" => General{{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set nocompatible
+
+set history=1000                    " Store a ton of history (default is 20)
+
+"tab
+set expandtab
+set shiftwidth=4
+set tabstop=4
+set smarttab
+
+set wildmenu "Turn on WiLd menu
+
+set linebreak
+set wrap "Wrap lines
+set whichwrap+=<,>,h,l
+
+set autoindent "Auto indent
+
+set guifont=Monospace\ 13
+
+"fold
+set commentstring=%s
+autocmd FileType python set foldmethod=indent
+
+"file
+scriptencoding utf-8
+set fileencodings=utf-8,chinese,GB18030,latin-1
+"set fileencodings=chinese,utf-8,latin-1
+set fileformats=unix,dos,mac "Default file types
+
+"edit
+" Set backspace config
+set backspace=eol,start,indent
+set hidden "Change buffer - without saving
+"When .vimrc is edited, reload it
+if MySys() == 'windows'
+    autocmd! bufwritepost _vimrc.common source $MyVIMPath/_vimrc.win 
+    autocmd! BufEnter *vim* set fileformat=unix | set list
+endif
+
+if MySys() == 'android'
+    let mapleader = ',,' "android
+    " command! Mp3 :CtrlP /mnt/sdcard/Audio/Language/MP3/
+endif
+
+let mapleader = ','
+
+" Always switch to the current file directory
+autocmd BufEnter * if bufname("") !~ "^\[A-Za-z0-9\]*://" | lcd %:p:h | endif
+
+function! ResCur()
+    if line("'\"") <= line("$")
+        silent! normal! g`"
+        return 1
+    endif
+endfunction
+
+augroup resCur
+    autocmd!
+    autocmd BufWinEnter * call ResCur()
+augroup END
+
+""""""""""""""""""""""""""""""
+" if MySys() == 'windows'
+" " Make shift-insert work like in Xterm
+"     map <S-Insert> <MiddleMouse>
+"     map! <S-Insert> <MiddleMouse>
+" endif
+
+" if MySys() == 'linux'
+"     nnoremap <S-Insert> "+gP
+"     inoremap <S-Insert> <C-R><C-O>+
+"     vnoremap <S-Delete> "+x
+"     vnoremap <C-Delete> "+y
+"     nnoremap <C-Insert> "+gP
+"     inoremap <C-Insert> <C-R><C-O>+
+" endif
+
+if has('clipboard')
+    if has('unnamedplus')  " When possible use + register for copy-paste
+        set clipboard=unnamed,unnamedplus
+    else         " On mac and Windows, use * register for copy-paste
+        set clipboard=unnamed
+    endif
+endif
+
+"map <S-Insert> <C-r>+
+" Shift-Insert	<M-N><M-T>   "*P	"-d"*P      <C-R><C-O>*
+" CTRL-Insert	<M-N><M-U>		"*y
+" Shift-Del	<M-N><M-W>		"*d
+" CTRL-Del	<M-N><M-X>		"*d
+
+
+"Remap VIM 0
+"map 0 ^
+
+"Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
+nmap <M-j> mz:m+<cr>`z
+nmap <M-k> mz:m-2<cr>`z
+vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
+vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
+
+"search
+set ignorecase "Ignore case when searching
+set smartcase
+set hlsearch "Highlight search things
+set incsearch "Make search act like search in modern browsers
+set magic "Set magic on, for regular expressions
+set showmatch "Show matching bracets when text indicator is over them
+
+
+" autocmd VimLeave * call system("xsel -ib", getreg('+'))
+autocmd VimLeave * call system("xsel -ip", getreg('*'))
+
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+" => Spell checking{{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+command! Spellcheck :setlocal spell spelllang=en_gb
+autocmd BufRead 201?.txt :Spellcheck
+"Pressing ,ss will toggle and untoggle spell checking
+"map <leader>ss :setlocal spell!<cr>
+
+"Shortcuts using <leader>
+"map <leader>sn ]s
+"map <leader>sp [s
+"map <leader>sa zg
+"map <leader>s? z=
+" => syntax{{{1
+autocmd BufNewFile,BufReadPost *.ino,*.pde set filetype=cpp
+
+" => status line{{{1
+" Always hide the statusline
+set laststatus=2
+
+" Format the statusline
+if MySys() == 'windows' || MySys() == 'linux'
+    set statusline=\ %{HasPaste()}%f%m%r%h\ %w\ \ CWD:\ %r%{CurDir()}%h\ \ \ Line:\ %l/%L:%c\
+endif
+if MySys() == 'android'
+    set statusline=\ %{HasPaste()}%f%m%r%h\ %w\ \ CWD:\ %r%{CurDir()}%h\ \ \ Line:\ %l/%L:%c
+endif
+
+function! CurDir()
+    let curdir = substitute(getcwd(), '/Users/amir/', "~/", "g")
+    return curdir
+endfunction
+
+function! HasPaste()
+    if &paste
+        return 'PASTE MODE  '
+    else
+        return ''
+    endif
+endfunction
+
+
+" => swapBakUndo {{{1
+"let $MySwapDir=$MyVIMPath.'VimBuffer/VimSwapFiles/'
+"let $MyBackupdir=$MyVIMPath.'VimBuffer/vimbackupfiles/'
+"let $MyUndoDir=$MyVIMPath.'VimBuffer/VimUndodirFiles/'
+
+let &backupdir=BufferDir . 'VimBackupFiles/'
+let &directory=BufferDir . 'VimSwapFiles/'
+set backup
+
+let &undodir=BufferDir . 'VimUndodirFiles/'
+set undofile
+set undolevels=1000         " Maximum number of changes that can be undone
+set undoreload=10000        " Maximum number lines to save for undo on a buffer reload
+
+let &viewdir=BufferDir . 'VimViews/'
+" set viewdir=$HOME/view
+" => visualMod{{{1
+" Really useful!
+"  In visual mode when you press * or # to search for the current selection
+vnoremap <silent> * :call VisualSearch('f')<CR>
+vnoremap <silent> # :call VisualSearch('b')<CR>
+
+" When you press gv you vimgrep after the selected text
+vnoremap <silent> gv :call VisualSearch('gv')<CR>
+
+function! CmdLine(str)
+    exe "menu Foo.Bar :" . a:str
+    emenu Foo.Bar
+    unmenu Foo
+endfunction 
+
+" From an idea by Michael Naumann
+function! VisualSearch(direction) range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
+
+    let l:pattern = escape(@", '\\/.*$^~[]')
+    let l:pattern = substitute(l:pattern, "\n$", "", "")
+
+    if a:direction == 'b'
+        execute "normal ?" . l:pattern . "^M"
+    elseif a:direction == 'gv'
+        call CmdLine("vimgrep " . '/'. l:pattern . '/' . ' **/*.')
+    elseif a:direction == 'f'
+        execute "normal /" . l:pattern . "^M"
+    endif
+
+    let @/ = l:pattern
+    let @" = l:saved_reg
+endfunction
+
+map <leader>gp :vimgrep // **/*.<left><left><left><left><left><left><left>
+
+" => sesstion & view{{{1
+set viewoptions=folds
+au BufWinLeave *.otl mkview
+au BufWinEnter *.otl silent loadview
+
+" autocmd BufRead ToDo_Outline.otl :call vGTDSidebar#VGTD_initEnviron()
+" autocmd VimLeave * call SaveSess()
+" autocmd VimEnter * call RestoreSess()
+
+" => GUI {{{1
+if MySys() == 'windows'
+    au GUIEnter * simalt ~x
+endif
+
+" if MySys() == 'linux'
+"     set lines=48
+"     set columns=160
+" endif
+
+syntax on
+
+map <silent> <leader><cr> :noh<cr>
+
+"完全隐藏菜单
+":set guioptions-=m
+"完全隐藏工具栏
+set guioptions-=T
+" map <silent> <C-F2> :if &guioptions =~ 'm'
+"             \ set guioptions-=m
+"             \ else
+"             \ set guioptions+=m
+"             \ endif<CR>
+"set t_Co=256
+syntax enable "Enable syntax hl
+
+
+try
+    lang en_US
+catch
+endtry
+
+"au VimEnter * set winheight=999
+set mouse=a                 " Automatically enable mouse usage
+set mousehide               " Hide the mouse cursor while typing
+set scrolloff=2
+if has('cmdline_info')
+    set ruler                   " Show the ruler
+    set rulerformat=%30(%=\:b%n%y%m%r%w\ %l,%c%V\ %P%) " A ruler on steroids
+    set showcmd                 " Show partial commands in status line and
+                                " Selected characters/lines in visual mode
+endif
+"set list
+if MySys() == 'windows' || MySys() == 'linux'
+    set cmdheight=2 "The commandbar height
+endif
+set mat=3 "How many tenths of a second to blink
+set noerrorbells
+set novisualbell
+set nolazyredraw "Don't redraw while executing macros 
+set t_vb=
+
+"set lines=50
+"set columns=130
+
+"set list
+if MySys() == 'windows' || MySys() == 'linux'
+    set listchars=tab:^.,trail:.,eol:$
+endif
+if MySys() == 'android'
+    set listchars=trail:.
+endif
+
+
+set showmode                    " Display the current mode
+set cursorline                  " Highlight current line
+highlight clear SignColumn      " SignColumn should match background
+highlight clear LineNr          " Current line number row will have same background color in relative mode
+
+" => moving{{{1
+" Smart way to move btw. windows
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+" Close all the buffers
+"map <leader>ba :1,300 bd!<cr>
+
+" Use the arrows to something usefull
+"map <right> :bn<cr>
+"map <left> :bp<cr>
+
+" Tab configuration
+"map <leader>tn :tabnew<cr>
+"map <leader>te :tabedit 
+"map <leader>tc :tabclose<cr>
+"map <leader>tm :tabmove 
+"map <right> :tabnext<cr>
+"map <left> :tabprevious<cr>
+
+" When pressing <leader>cd switch to the directory of the open buffer
+map <leader>cd :cd %:p:h<cr>
+
+" Close the current buffer
+map <leader>bd :Bclose<cr>
+
+command! Bclose call <SID>BufcloseCloseIt()
+function! <SID>BufcloseCloseIt()
+   let l:currentBufNum = bufnr("%")
+   let l:alternateBufNum = bufnr("#")
+
+   if buflisted(l:alternateBufNum)
+     buffer #
+   else
+     bnext
+   endif
+
+   if bufnr("%") == l:currentBufNum
+     new
+   endif
+
+   if buflisted(l:currentBufNum)
+     execute("bdelete! ".l:currentBufNum)
+   endif
+endfunction
+
+" => functions{{{1
+set diffexpr=MyDiff()
+function! MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let eq = ''
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      let cmd = '""' . $VIMRUNTIME . '\diff"'
+      let eq = '"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+endfunction
+
+" function! CurrentFileDir(cmd)
+"   return a:cmd . " " . expand("%:p:h") . "/"
+" endfunc
+
+
+" => plugin configures (bef vundle){{{1
+" => voom{{{2
+set foldmethod=marker
+
+nnoremap <silent> <F6> :VoomToggle<CR>
+autocmd! BufEnter *.md Voom markdown
+
+" => NeoBundle{{{1
+" set runtimepath=$MyVIMFiles,$VIMRUNTIME,$MyVIMFiles_vundle,$MyVIMFiles_After
+let path = $MyVIMPath.'bundle_vundle/'
+let neobundlepath = path . 'neobundle.vim'
+let &runtimepath .= ','.expand(neobundlepath)
+
+call neobundle#begin(expand(path))
+
+"edit {{{2 
+NeoBundle 'https://github.com/tpope/vim-speeddating'
+NeoBundle 'https://github.com/tpope/vim-repeat'
+
+NeoBundle 'https://github.com/sjl/gundo.vim'
+
+NeoBundle 'https://github.com/godlygeek/tabular'
+
+NeoBundle 'tomtom/tregisters_vim',
+      \ { 'depends' : 'tomtom/tlib_vim' }
+NeoBundle 'tomtom/tmarks_vim',
+      \ { 'depends' : 'tomtom/tlib_vim' }
+
+"office {{{2 
+NeoBundle 'https://github.com/vimoutliner/vimoutliner'
+
+"search {{{2
+NeoBundle 'https://github.com/terryma/vim-multiple-cursors'
+NeoBundle "https://github.com/jeetsukumaran/vim-buffersaurus"
+
+"format {{{2 
+NeoBundle 'https://github.com/plasticboy/vim-markdown'
+NeoBundle 'https://github.com/dag/vim-fish.git'
+
+"complete {{{2 
+NeoBundle 'https://github.com/tpope/vim-surround'
+
+"moving {{{2 
+NeoBundle 'https://github.com/Lokaltog/vim-easymotion'
+
+"file management {{{2 
+NeoBundle 'https://github.com/scrooloose/nerdtree'
+NeoBundle 'https://github.com/Shougo/unite.vim'
+NeoBundle 'https://github.com/thinca/vim-unite-history'
+NeoBundle 'https://github.com/sgur/unite-qf'
+NeoBundle 'https://github.com/lambdalisue/unite-grep-vcs'
+NeoBundle 'https://github.com/Shougo/neomru.vim'
+
+"Colorscheme {{{2 
+NeoBundle 'altercation/vim-colors-solarized'
+NeoBundle 'https://github.com/skammer/vim-css-color'
+
+"windows & linux {{{2
+if MySys() == 'windows' || MySys() == 'linux'
+    NeoBundle 'https://github.com/thinca/vim-quickrun'
+
+    "GUI {{{3 
+    NeoBundle 'https://github.com/itchyny/lightline.vim'
+
+    "office {{{3 
+    NeoBundle 'https://github.com/vim-scripts/VOoM'
+    
+    "development {{{3 
+    NeoBundle 'https://github.com/tpope/vim-commentary'
+    NeoBundle 'KabbAmine/zeavim.vim'
+
+    "python {{{3 
+    NeoBundle 'https://github.com/Yggdroot/indentLine'
+
+    "tags {{{3 
+    NeoBundle 'https://github.com/majutsushi/tagbar'
+
+    "version control {{{3 
+    NeoBundle 'https://github.com/tpope/vim-fugitive'
+
+    "auto complete {{{3 
+    NeoBundle 'https://github.com/SirVer/ultisnips'
+    NeoBundle 'honza/vim-snippets'
+
+    "marks {{{3
+    NeoBundle 'https://github.com/kshenoy/vim-signature'
+
+    "fromater {{{3
+    NeoBundle 'https://github.com/Chiel92/vim-autoformat'
+endif
+
+"linux {{{2
+if MySys() == 'linux'
+    "auto complete {{{3
+    NeoBundle 'https://github.com/Valloric/YouCompleteMe.git'
+
+    "Syntax checking {{{3 
+    NeoBundle 'https://github.com/scrooloose/syntastic.git'
+
+    "input method {{{3
+    NeoBundle 'https://github.com/lilydjwg/fcitx.vim'
+endif
+
+call neobundle#end()
+filetype plugin indent on  
+
+" => plugin configures (aft vundle){{{1
+" => bsgrep {{{2
+command! -nargs=1 Bg :Bsgrep! <args>
+" => solarized{{{2
+let g:solarized_italic=0
+"set background=light
+if MySys() == 'windows' || MySys() == 'linux'
+    set background=dark
+    colorscheme solarized
+endif
+
+
+" => My GTD {{{2
+if MySys() == 'windows'
+    command! DlogFrame :r !C:\Python27\python.exe d:\My_Scripts\Self-productive\outlinerHelper\combine.py
+    command! -nargs=1 DlogFrameDate :r !C:\Python27\python.exe d:\My_Scripts\Self-productive\outlinerHelper\combine.py "<args>"
+endif
+
+if MySys() == 'linux'
+    " command! DlogFrame :r !ssh -i /home/dersu/Backup/Dropbox/Backup/keys/ec2/ec2-dev-ubuntu.pem ubuntu@tei2.info outlinerHelper/combinelinux.py
+    " command! DlogFrame :r !cus-taskwarrior.py
+    command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
+    " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
+    " command! DlogFrame :r !/home/dersu/Backup/Dropbox/Apps/scripts/outlinerHelper/outlinerHelper.py --mode gen -o /home/dersu/Backup/Dropbox/Briefcase/Checklist/ToDo_Outline.otl
+    command! -nargs=1 DlogFrameDate :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>"
+    " command! -nargs=1 DlogFrameDate :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>" --enddate "<args>"
+endif
+
+if MySys() == 'android'
+    let g:vGTDSidebar_Platform = "android"
+    command! Gst :GtStartt
+    command! Gsp :GtStop
+    autocmd BufRead ToDo_Outline.otl execute 'Bsgrep!' . vGTDSidebar#VGTD_patch()
+endif
+
+"bsgrep setting{{{
+" let g:buffersaurus_element_term_map = {
+"         \   'NextAll'        : '^.*@due\(.*@done\)\@!.*$'
+"         \ , 'NextAToday'   : '^.*@due(\(' . GetMyWeekNoStr() . '\|' . GetWeekPatternBefToday() . '\))\(.*@done\)\@!.*$'
+"         \ }
+" 
+" "let g:buffersaurus_viewport_split_policy = 'N'
+"}}}
+
+" => syntastic{{{2
+let g:syntastic_python_checkers=['flake8']
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+" let g:syntastic_quiet_warnings=1
+let g:syntastic_quiet_messages={'level':'warnings'}
+
+" => YouCompleteMe {{{2
+" for ycm
+let g:ycm_error_symbol = '>>'
+let g:ycm_warning_symbol = '>*'
+let g:ycm_autoclose_preview_window_after_completion = 1
+nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
+nmap <F9> :YcmDiags<CR>
+
+
+" => indent guides{{{2
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_start_level = 2
+let g:indent_guides_guide_size = 1
+
+" => vimoutliner{{{2
+autocmd BufRead *.otl set foldlevel=1
+
+" => unite {{{2
+" nnoremap <silent> <F9> :Unite  -start-insert file_mru<CR>
+nnoremap <leader>f :Unite  -start-insert buffer file_mru file <CR>
+" nnoremap <leader>b :Unite buffer<cr>
+let g:unite_source_history_yank_enable=1
+let g:unite_source_file_mru_long_limit = 3000
+
+
+" => NERDTree plugin{{{2
+nnoremap <silent> <F7> :NERDTreeToggle<CR>
+
+" => UltiSnip{{{2
+let g:UltiSnipsExpandTrigger="<c-j>"
+let s:Rtpath = &runtimepath
+let s:Rtpath = s:Rtpath.','.$MyVIMPath.'PluginConf'
+
+let &runtimepath = s:Rtpath
+
+autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
+
+" => Gundo{{{2
+nnoremap <F5> :GundoToggle<CR>
