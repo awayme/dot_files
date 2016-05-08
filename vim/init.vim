@@ -1,7 +1,6 @@
-let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
+let g:consolidated_directory = $HOME . '/Data/Documents/vimfiles/'
 
-" Environment {
-
+" Environment {{{
     " Identify platform {
         silent function! OSX()
             return has('macunix')
@@ -35,11 +34,10 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
             inoremap <silent> <C-[>OC <RIGHT>
         endif
     " }
+" }}}
+" General {{{
+    let mapleader = ','
 
-" }
-
-
-" General {
     set background=dark         " Assume a dark background
 
     " Allow to trigger background
@@ -54,6 +52,8 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     endfunction
     noremap <leader>bg :call ToggleBG()<CR>
 
+    set foldmethod=marker
+    set nospell
     " if !has('gui')
         "set term=$TERM          " Make arrow and other keys work
     " endif
@@ -62,19 +62,12 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     set mouse=a                 " Automatically enable mouse usage
     set mousehide               " Hide the mouse cursor while typing
     scriptencoding utf-8
-
-    if has('clipboard')
-        if has('unnamedplus')  " When possible use + register for copy-paste
-            set clipboard=unnamed,unnamedplus
-        else         " On mac and Windows, use * register for copy-paste
-            set clipboard=unnamed
-        endif
-    endif
+    set fileencodings=utf-8,chinese,GB18030,latin-1
+    "set fileencodings=chinese,utf-8,latin-1
+    set fileformats=unix,dos,mac "Default file types
 
     " Most prefer to automatically switch to the current file directory when
-    " a new buffer is opened; to prevent this behavior, add the following to
-    " your .vimrc.before.local file:
-    " Always switch to the current file directory
+    " a new buffer is opened; to prevent this behavior
     autocmd BufEnter * if bufname("") !~ "^\[A-Za-z0-9\]*://" | lcd %:p:h | endif
 
     " set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
@@ -86,10 +79,6 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     " set iskeyword-=.                    " '.' is an end of word designator
     " set iskeyword-=#                    " '#' is an end of word designator
     " set iskeyword-=-                    " '-' is an end of word designator
-
-    " Instead of reverting the cursor to the last position in the buffer, we
-    " set it to the first line when editing a git commit message
-    au FileType gitcommit au! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
 
     " http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
     " Restore cursor to file position in previous editing session
@@ -127,10 +116,7 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
         endif
 
         " To specify a different directory in which to place the vimbackup,
-        " vimviews, vimundo, and vimswap files/directories, add the following to
-        " your .vimrc.before.local file:
-        "   let g:spf13_consolidated_directory = <full path to desired directory>
-        "   eg: let g:spf13_consolidated_directory = $HOME . '/.vim/'
+        " vimviews, vimundo, and vimswap files/directories
         if exists('g:consolidated_directory')
             let common_dir = g:consolidated_directory . prefix
         else
@@ -154,23 +140,12 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
         endfor
     endfunction
     call InitializeDirectories()
-    " }
-
-" Vim UI {
-
-    " if !exists('g:override_spf13_bundles') && filereadable(expand("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
-    "     let g:solarized_termcolors=256
-    "     let g:solarized_termtrans=1
-    "     let g:solarized_contrast="normal"
-    "     let g:solarized_visibility="normal"
-    "     color solarized             " Load a colorscheme
-    " endif
-
+" }}}
+" Vim UI {{{
     set tabpagemax=15               " Only show 15 tabs
     set showmode                    " Display the current mode
 
     set cursorline                  " Highlight current line
-
     highlight clear SignColumn      " SignColumn should match background
     highlight clear LineNr          " Current line number row will have same background color in relative mode
     "highlight clear CursorLineNr    " Remove highlight color from current line number
@@ -201,6 +176,7 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     set number                      " Line numbers on
     set showmatch                   " Show matching brackets/parenthesis
     set incsearch                   " Find as you type search
+    set magic "Set magic on, for regular expressions
     set hlsearch                    " Highlight search terms
     set winminheight=0              " Windows can be 0 line high
     set ignorecase                  " Case insensitive search
@@ -214,15 +190,64 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     set list
     set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
 
-" }
+" * selection
+" + copy-paste
+if has('clipboard')
+    if has('nvim')
+        set clipboard=unnamedplus
+    elseif has('unnamedplus')  " When possible use + register for copy-paste
+        set clipboard=unnamed,unnamedplus
+    else         " On mac and Windows, use * register for copy-paste
+        set clipboard=unnamed
+    endif
+endif
 
-" Formatting {
+" Cut: control-X / shift-Delete
+" d
+vnoremap <S-Delete> "+x
+" Copy: control-C / control-Insert
+vnoremap <C-Insert> "+y
+" Paste: control-V / shift-Insert
+nnoremap <S-Insert> "+gP
+inoremap <S-Insert> <C-R><C-O>+
+cnoremap <S-Insert> <C-R>+
 
+if has('nvim')
+    vmap <LeftRelease> "*ygv
+endif
+
+" autocmd VimLeave * call system("xsel -ib", getreg('+'))
+" autocmd VimLeave * call system("xsel -ip", getreg('*'))
+" }}}
+" GUI Settings {{{
+
+    " GVIM- (here instead of .gvimrc)
+    if has('gui_running')
+        set guioptions-=T           " Remove the toolbar
+        set lines=40                " 40 lines of text instead of 24
+        if LINUX() && has("gui_running")
+            set guifont=Andale\ Mono\ Regular\ 12,Menlo\ Regular\ 11,Consolas\ Regular\ 12,Courier\ New\ Regular\ 14
+        elseif OSX() && has("gui_running")
+            set guifont=Andale\ Mono\ Regular:h12,Menlo\ Regular:h11,Consolas\ Regular:h12,Courier\ New\ Regular:h14
+        elseif WINDOWS() && has("gui_running")
+            set guifont=Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
+        endif
+    else
+        if &term == 'xterm' || &term == 'screen'
+            set t_Co=256            " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
+        endif
+        "set term=builtin_ansi       " Make arrow and other keys work
+    endif
+" }}}
+" Formatting {{{
+    set linebreak
     " set nowrap                      " Do not wrap long lines
+    set wrap
     set autoindent                  " Indent at the same level of the previous line
     set shiftwidth=4                " Use indents of 4 spaces
     set expandtab                   " Tabs are spaces, not tabs
     set tabstop=4                   " An indentation every four columns
+    set smarttab
     set softtabstop=4               " Let backspace delete indent
     set nojoinspaces                " Prevents inserting two spaces after punctuation on a join (J)
     set splitright                  " Puts new vsplit windows to the right of the current
@@ -230,42 +255,30 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     "set matchpairs+=<:>             " Match, to be used with %
     set pastetoggle=<F12>           " pastetoggle (sane indentation on pastes)
     "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
-    " Remove trailing whitespaces and ^M chars
-    " To disable the stripping of whitespace, add the following to your
-    " .vimrc.before.local file:
-    "   let g:spf13_keep_trailing_whitespace = 1
-    " autocmd FileType c,cpp,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl,sql autocmd BufWritePre <buffer> if !exists('g:spf13_keep_trailing_whitespace') | call StripTrailingWhitespace() | endif
-    "autocmd FileType go autocmd BufWritePre <buffer> Fmt
+    autocmd FileType c,cpp,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl,sql autocmd BufWritePre <buffer> call StripTrailingWhitespace()
+    " autocmd FileType go autocmd BufWritePre <buffer> Fmt
     " autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
     " autocmd FileType haskell,puppet,ruby,yml setlocal expandtab shiftwidth=2 softtabstop=2
-    " preceding line best in a plugin but here for now.
-
     " autocmd BufNewFile,BufRead *.coffee set filetype=coffee
-
     " Workaround vim-commentary for Haskell
     " autocmd FileType haskell setlocal commentstring=--\ %s
     " Workaround broken colour highlighting in Haskell
     " autocmd FileType haskell,rust setlocal nospell
 
-" }
-
-" Key (re)Mappings {
-
-    " The default leader is '\', but many people prefer ',' as it's in a standard
-    " location. To override this behavior and set it back to '\' (or any other
-    " character) add the following to your .vimrc.before.local file:
-    "   let g:spf13_leader='\'
-    let mapleader = ','
-
+    set commentstring="# %s"
+" }}}
+" Key (re)Mappings {{{
     " Easier moving in tabs and windows
     " The lines conflict with the default digraph mapping of <C-K>
-    " If you prefer that functionality, add the following to your
-    " .vimrc.before.local file:
-    "   let g:spf13_no_easyWindows = 1
-    map <C-J> <C-W>j<C-W>_
-    map <C-K> <C-W>k<C-W>_
-    map <C-L> <C-W>l<C-W>_
-    map <C-H> <C-W>h<C-W>_
+    " map <C-J> <C-W>j<C-W>_
+    " map <C-K> <C-W>k<C-W>_
+    " map <C-L> <C-W>l<C-W>_
+    " map <C-H> <C-W>h<C-W>_
+
+    map <C-j> <C-W>j
+    map <C-k> <C-W>k
+    map <C-h> <C-W>h
+    map <C-l> <C-W>l
 
     " Wrapped lines goes down/up to next row, rather than next line in file.
     noremap j gj
@@ -307,13 +320,6 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     vnoremap <Home> :<C-U>call WrapRelativeMotion("0", 1)<CR>
     vnoremap ^ :<C-U>call WrapRelativeMotion("^", 1)<CR>
 
-    " The following two lines conflict with moving to top and
-    " bottom of the screen
-    " If you prefer that functionality, add the following to your
-    " .vimrc.before.local file:
-    " map <S-H> gT
-    " map <S-L> gt
-
     " Stupid shift key fixes
     if has("user_commands")
         command! -bang -nargs=* -complete=file E e<bang> <args>
@@ -345,12 +351,9 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     nmap <leader>f9 :set foldlevel=9<CR>
 
     " Most prefer to toggle search highlighting rather than clear the current
-    " search results. To clear search highlighting rather than toggle it on
-    " and off, add the following to your .vimrc.before.local file:
-    "   let g:spf13_clear_search_highlight = 1
-    nmap <silent> <leader>/ :nohlsearch<CR>
-    " nmap <silent> <leader>/ :set invhlsearch<CR>
-
+    " search results
+    " nmap <silent> <leader>/ :nohlsearch<CR>
+    nmap <silent> <leader>/ :set invhlsearch<CR>
 
     " Find merge conflict markers
     map <leader>fc /\v^[<\|=>]{7}( .*\|$)<CR>
@@ -361,8 +364,8 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     cmap cd. lcd %:p:h
 
     " Visual shifting (does not exit Visual mode)
-    vnoremap < <gv
-    vnoremap > >gv
+    " vnoremap < <gv
+    " vnoremap > >gv
 
     " Allow using the repeat operator with a visual selection (!)
     " http://stackoverflow.com/a/8064607/127816
@@ -397,136 +400,336 @@ let g:consolidated_directory = "/home/dersu/Data/Documents/vimfiles/"
     " fullscreen mode for GVIM and Terminal, need 'wmctrl' in you PATH
     map <silent> <F11> :call system("wmctrl -ir " . v:windowid . " -b toggle,fullscreen")<CR>
 
-" }
-"
-"
-" call plug#begin('~/.vim/plugged')
-call plug#begin('/home/dersu/.config/nvim/plugins')
+    function! CmdLine(str)
+        exe "menu Foo.Bar :" . a:str
+        emenu Foo.Bar
+        unmenu Foo
+    endfunction 
+     
+    " From an idea by Michael Naumann
+    function! VisualSearch(direction) range
+        let l:saved_reg = @"
+        execute "normal! vgvy"
+     
+        let l:pattern = escape(@", '\\/.*$^~[]')
+        let l:pattern = substitute(l:pattern, "\n$", "", "")
+     
+        if a:direction == 'b'
+            execute "normal ?" . l:pattern . "^M"
+        elseif a:direction == 'gv'
+            call CmdLine("vimgrep " . '/'. l:pattern . '/' . ' **/*.')
+        elseif a:direction == 'f'
+            execute "normal /" . l:pattern . "^M"
+        endif
+     
+        let @/ = l:pattern
+        let @" = l:saved_reg
+    endfunction
 
-" GUI
-Plug 'https://github.com/equalsraf/neovim-gui-shim.git'
-" The colorscheme with neovim in mind
-Plug 'https://github.com/freeo/vim-kalisi'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'bling/vim-bufferline'
-Plug 'flazz/vim-colorschemes'
-"Bundle 'powerline/fonts'
+    "  In visual mode when you press * or # to search for the current selection
+    vnoremap <silent> * :call VisualSearch('f')<CR>
+    vnoremap <silent> # :call VisualSearch('b')<CR>
+     
+    " When you press gv you vimgrep after the selected text
+    vnoremap <silent> gv :call VisualSearch('gv')<CR>
 
-" Edit
-Plug 'https://github.com/wsdjeg/vim-mundo.git'
-Plug 'https://github.com/lilydjwg/fcitx.vim'
-Plug 'https://github.com/kshenoy/vim-signature'
-Plug 'luochen1990/rainbow'
-Plug 'https://github.com/Shougo/unite.vim'
-" Plug 'https://github.com/Shougo/denite.nvim.git'
-Plug 'https://github.com/Shougo/neomru.vim'
-" Plug 'https://github.com/dhruvasagar/vim-table-mode.git'
-" Plug 'https://github.com/mhinz/vim-grepper.git'
-Plug 'https://github.com/airodactyl/neovim-ranger.git'
-Plug 'scrooloose/syntastic'
-Plug 'https://github.com/Yggdroot/indentLine'
-Plug 'terryma/vim-multiple-cursors'
-Plug 'easymotion/vim-easymotion'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-surround'
-Plug 'mhinz/vim-signify'
+    " Close the current buffer
+    map <leader>bd :Bclose<cr>
+     
+    command! Bclose call <SID>BufcloseCloseIt()
+    function! <SID>BufcloseCloseIt()
+       let l:currentBufNum = bufnr("%")
+       let l:alternateBufNum = bufnr("#")
+     
+       if buflisted(l:alternateBufNum)
+         buffer #
+       else
+         bnext
+       endif
+     
+       if bufnr("%") == l:currentBufNum
+         new
+       endif
+     
+       if buflisted(l:currentBufNum)
+         execute("bdelete! ".l:currentBufNum)
+       endif
+    endfunction
 
-" Developement
-Plug 'https://github.com/benekastah/neomake.git'
-Plug 'KabbAmine/zeavim.vim'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-Plug 'gorodinskiy/vim-coloresque'
-Plug 'hail2u/vim-css3-syntax'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-fugitive'
-Plug 'honza/vim-snippets'
+    "Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
+    nmap <M-j> mz:m+<cr>`z
+    nmap <M-k> mz:m-2<cr>`z
+    vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
+    vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
 
-" file type
-Plug 'https://github.com/dag/vim-fish.git'
-Plug 'tpope/vim-markdown'
+    "Pressing ,ss will toggle and untoggle spell checking
+    map <leader>ss :setlocal spell!<cr>
 
-"Plug 'klen/python-mode'
-"Plug 'yssource/python.vim'
-"Plug 'python_match.vim'
-"Plug 'pythoncomplete'
-"Plug 'reedes/vim-litecorrect'
-"Plug 'reedes/vim-textobj-sentence'
-"Plug 'reedes/vim-textobj-quote'
-"Plug 'reedes/vim-wordy'
-"Plug 'osyo-manga/vim-over'
-"Plug 'spf13/vim-preview'
-"Plug 'tpope/vim-abolish.git'
-"Plug 'osyo-manga/vim-over'
-"Plug 'kana/vim-textobj-user'
-"Plug 'kana/vim-textobj-indent'
-"Plug 'gcmt/wildfire.vim'
-"Plug 'vim-scripts/restore_view.vim'
-"Plug 'mbbill/undotree'
-"Plug 'klen/python-mode'
-"Plug 'mattn/emmet-vim' 
+    " map <leader>gp :vimgrep // **/*.<left><left><left><left><left><left><left>
+" }}}
+" Plugins {{{
+    " " call plug#begin('~/.vim/plugged')
+    call plug#begin('/home/dersu/.config/nvim/plugins')
 
+    Plug 'https://github.com/junegunn/vim-plug'
 
+    " GUI
+    Plug 'https://github.com/equalsraf/neovim-gui-shim.git'
+    Plug 'https://github.com/freeo/vim-kalisi'
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
+    " Plug 'bling/vim-bufferline'
+    Plug 'altercation/vim-colors-solarized'
+    "Bundle 'powerline/fonts'
 
+    " " Edit
+    Plug 'https://github.com/wsdjeg/vim-mundo.git', { 'on':  'MundoToggle' }
+    " Plug 'scrooloose/nerdtree'
+    Plug 'https://github.com/lilydjwg/fcitx.vim'
+    Plug 'https://github.com/kshenoy/vim-signature'
+    Plug 'luochen1990/rainbow'
+    Plug 'https://github.com/Shougo/unite.vim'
+    " Plug 'https://github.com/Shougo/denite.nvim.git'
+    Plug 'https://github.com/Shougo/neomru.vim'
+    " Plug 'https://github.com/dhruvasagar/vim-table-mode.git'
+    " Plug 'https://github.com/mhinz/vim-grepper.git'
+    Plug 'https://github.com/airodactyl/neovim-ranger.git'
+    Plug 'https://github.com/scrooloose/syntastic.git'
+    Plug 'https://github.com/Yggdroot/indentLine'
+    Plug 'terryma/vim-multiple-cursors'
+    Plug 'easymotion/vim-easymotion'
+    Plug 'tpope/vim-repeat'
+    Plug 'tpope/vim-surround'
+    Plug 'mhinz/vim-signify'
 
+    " Developement
+    Plug 'https://github.com/benekastah/neomake.git'
+    Plug 'KabbAmine/zeavim.vim'
+    Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+    Plug 'gorodinskiy/vim-coloresque'
+    Plug 'hail2u/vim-css3-syntax'
+    Plug 'tpope/vim-commentary'
+    Plug 'https://github.com/tpope/vim-fugitive'
+    Plug 'https://github.com/majutsushi/tagbar'
+    function! DoRemote(arg)
+      UpdateRemotePlugins
+    endfunction
+    Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
 
-function! DoRemote(arg)
-  UpdateRemotePlugins
-endfunction
-Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
+    " file type
+    Plug 'https://github.com/dag/vim-fish.git'
+    Plug 'tpope/vim-markdown'
 
+    "Plug 'klen/python-mode'
+    "Plug 'yssource/python.vim'
+    "Plug 'python_match.vim'
+    "Plug 'pythoncomplete'
+    "Plug 'reedes/vim-litecorrect'
+    "Plug 'reedes/vim-textobj-sentence'
+    "Plug 'reedes/vim-textobj-quote'
+    "Plug 'reedes/vim-wordy'
+    "Plug 'osyo-manga/vim-over'
+    "Plug 'spf13/vim-preview'
+    "Plug 'tpope/vim-abolish.git'
+    "Plug 'osyo-manga/vim-over'
+    "Plug 'kana/vim-textobj-user'
+    "Plug 'kana/vim-textobj-indent'
+    "Plug 'gcmt/wildfire.vim'
+    "Plug 'vim-scripts/restore_view.vim'
+    "Plug 'mbbill/undotree'
+    "Plug 'klen/python-mode'
+    "Plug 'mattn/emmet-vim' 
+    " UnBundle 'jiangmiao/auto-pairs'
+    " UnBundle 'rhysd/conflict-marker.vim'
+    " UnBundle 'amirh/HTML-AutoCloseTag'
+    " UnBundle 'matchit.zip'
 
-Plug 'KabbAmine/zeavim.vim'
+    "     NeoBundle 'https://github.com/Chiel92/vim-autoformat'
+    " Bundle 'https://github.com/dhruvasagar/vim-table-mode.git'
+    " " Bundle 'https://github.com/mhinz/vim-grepper.git'
 
-" Make sure you use single quotes
+    " Add plugins to &runtimepath
+    call plug#end()
+" }}}
+" Plugin settings {{{
+    " => scheme {{{
+        colorscheme kalisi
+        " colorscheme solarized
+    " }}}
+    " => unite {{{
+        let g:unite_source_history_yank_enable=1
+        let g:unite_source_file_mru_long_limit = 500
+        nnoremap <leader>s :Unite -start-insert buffer file_mru file <CR>
+    " }}}
+    " => deoplete {{{
+        let g:deoplete#enable_at_startup = 1
+        " deoplete#enable()
+    " }}}
+    " => Rainbow {{{
+        let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
+    " }}}
+    " => TagBar {{{
+        nnoremap <silent> <leader>tt :TagbarToggle<CR>
+    " }}}
+    " => Fugitive {{{
+        " Instead of reverting the cursor to the last position in the buffer, we
+        " set it to the first line when editing a git commit message
+        au FileType gitcommit au! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
 
-" " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
-" Plug 'junegunn/vim-easy-align'
+        nnoremap <silent> <leader>gs :Gstatus<CR>
+        nnoremap <silent> <leader>gd :Gdiff<CR>
+        nnoremap <silent> <leader>gc :Gcommit<CR>
+        nnoremap <silent> <leader>gb :Gblame<CR>
+        nnoremap <silent> <leader>gl :Glog<CR>
+        nnoremap <silent> <leader>gp :Git push<CR>
+        nnoremap <silent> <leader>gr :Gread<CR>
+        nnoremap <silent> <leader>gw :Gwrite<CR>
+        nnoremap <silent> <leader>ge :Gedit<CR>
+        " Mnemonic _i_nteractive
+        nnoremap <silent> <leader>gi :Git add -p %<CR>
+        nnoremap <silent> <leader>gg :SignifyToggle<CR>
+    " }}}
+    " => MUndo {{{
+        nnoremap <Leader>u :MundoToggle<CR>
+        " If undotree is opened, it is likely one wants to interact with it.
+        " let g:undotree_SetFocusWhenToggle=1
+    " }}}
+    " => vim-airline {{{
+        " Set configuration options for the statusline plugin vim-airline.
+        " Use the powerline theme and optionally enable powerline symbols.
+        " To use the symbols , , , , , , and .in the statusline
+        " segments add the following to your .vimrc.before.local file:
+        "   let g:airline_powerline_fonts=1
+        " If the previous symbols do not render for you then install a
+        " powerline enabled font.
 
-" " Any valid git URL is allowed
-" Plug 'https://github.com/junegunn/vim-github-dashboard.git'
+        " See `:echo g:airline_theme_map` for some more choices
+        " Default in terminal vim is 'dark'
+        if !exists('g:airline_theme')
+            let g:airline_theme = 'solarized'
+        endif
+        if !exists('g:airline_powerline_fonts')
+            " Use the default set of separators with a few customizations
+            let g:airline_left_sep='›'  " Slightly fancier than '>'
+            let g:airline_right_sep='‹' " Slightly fancier than '<'
+        endif
+    " }}}
+    " =>  snips {{{
+        let g:UltiSnipsSnippetDirectories=['UltiSnips', '/home/dersu/.vim/PluginConf/UltiSnips']
 
-" " Group dependencies, vim-snippets depends on ultisnips
-" Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+        " " Snippets {
+        "         " Use honza's snippets.
+        "         " let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 
-" " On-demand loading
-" Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-" Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+        "         " Enable neosnippet snipmate compatibility mode
+        "         let g:neosnippet#enable_snipmate_compatibility = 1
 
-" " Using a non-master branch
-" Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
+        "         " For snippet_complete marker.
+        "         if has('conceal')
+        "             set conceallevel=2 concealcursor=i
+        "         endif
 
-" " Using a tagged release; wildcard allowed (requires git 1.9.2 or above)
-" Plug 'fatih/vim-go', { 'tag': '*' }
+        "         " Enable neosnippets when using go
+        "         let g:go_snippet_engine = "neosnippet"
 
-" " Plugin options
-" Plug 'nsf/gocode', { 'tag': 'v.20150303', 'rtp': 'vim' }
+        "         " Disable the neosnippet preview candidate window
+        "         " When enabled, there can be too much visual noise
+        "         " especially when splits are used.
+        "         set completeopt-=preview
+        "     endif
+        " " }
+    " }}}
+"}}}
+" Functions {{{
 
-" " Plugin outside ~/.vim/plugged with post-update hook
-" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    " " Initialize NERDTree as needed {
+    " function! NERDTreeInitAsNeeded()
+    "     redir => bufoutput
+    "     buffers!
+    "     redir END
+    "     let idx = stridx(bufoutput, "NERD_tree")
+    "     if idx > -1
+    "         NERDTreeMirror
+    "         NERDTreeFind
+    "         wincmd l
+    "     endif
+    " endfunction
+    " " }
 
-" " Unmanaged plugin (manually installed and updated)
-" Plug '~/my-prototype-plugin'
+    " Strip whitespace {
+    function! StripTrailingWhitespace()
+        " Preparation: save last search, and cursor position.
+        let _s=@/
+        let l = line(".")
+        let c = col(".")
+        " do the business:
+        %s/\s\+$//e
+        " clean up: restore previous search history, and cursor position
+        let @/=_s
+        call cursor(l, c)
+    endfunction
+    " }
 
-" Add plugins to &runtimepath
-call plug#end()
+    " Shell command {
+    function! s:RunShellCommand(cmdline)
+        botright new
 
-colorscheme kalisi
+        setlocal buftype=nofile
+        setlocal bufhidden=delete
+        setlocal nobuflisted
+        setlocal noswapfile
+        setlocal nowrap
+        setlocal filetype=shell
+        setlocal syntax=shell
 
+        call setline(1, a:cmdline)
+        call setline(2, substitute(a:cmdline, '.', '=', 'g'))
+        execute 'silent $read !' . escape(a:cmdline, '%#')
+        setlocal nomodifiable
+    endfunction
 
-" => unite {{{2
-nnoremap <leader>s :Unite -start-insert buffer file_mru file <CR>
+    command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
+    " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
+" }}}
+" my self-system {{{
+" command! DlogFrame :r !ssh -i /home/dersu/Backup/Dropbox/Backup/keys/ec2/ec2-dev-ubuntu.pem ubuntu@tei2.info outlinerHelper/combinelinux.py
+" command! DlogFrame :r !cus-taskwarrior.py
+command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
+" command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
+" command! DlogFrame :r !/home/dersu/Backup/Dropbox/Apps/scripts/outlinerHelper/outlinerHelper.py --mode gen -o /home/dersu/Backup/Dropbox/Briefcase/Checklist/ToDo_Outline.otl
+command! -nargs=1 DlogFrameDate :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>"
+" command! -nargs=1 DlogFrameDate :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>" --enddate "<args>"
+" }}}
+" offlines {{{
+" " => syntastic
+" let g:syntastic_python_checkers=['flake8']
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
+" " let g:syntastic_quiet_warnings=1
+" let g:syntastic_quiet_messages={'level':'warnings'}
 
-let g:unite_source_history_yank_enable=1
-let g:unite_source_file_mru_long_limit = 500
+" " => NERDTree plugin
+" nnoremap <silent> <F7> :NERDTreeToggle<CR>
 
+" " => UltiSnip
+" let g:UltiSnipsExpandTrigger="<c-j>"
+" let s:Rtpath = &runtimepath
+" let s:Rtpath = s:Rtpath.','.$MyVIMPath.'PluginConf'
 
-let g:deoplete#enable_at_startup = 1
-" deoplete#enable()
+" let &runtimepath = s:Rtpath
 
+" autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
 
 " " Plugins {
+    " if !exists('g:override_spf13_bundles') && filereadable(expand("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
+    "     let g:solarized_termcolors=256
+    "     let g:solarized_termtrans=1
+    "     let g:solarized_contrast="normal"
+    "     let g:solarized_visibility="normal"
+    "     color solarized             " Load a colorscheme
+    " endif
+
 
     " " TextObj Sentence {
     "     if count(g:spf13_bundle_groups, 'writing')
@@ -677,77 +880,6 @@ let g:deoplete#enable_at_startup = 1
     "         let g:pymode_rope = 0
     "     endif
     " " }
-
-    " " ctrlp {
-    "     if isdirectory(expand("~/.vim/bundle/ctrlp.vim/"))
-    "         let g:ctrlp_working_path_mode = 'ra'
-    "         nnoremap <silent> <D-t> :CtrlP<CR>
-    "         nnoremap <silent> <D-r> :CtrlPMRU<CR>
-    "         let g:ctrlp_custom_ignore = {
-    "             \ 'dir':  '\.git$\|\.hg$\|\.svn$',
-    "             \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$' }
-
-    "         if executable('ag')
-    "             let s:ctrlp_fallback = 'ag %s --nocolor -l -g ""'
-    "         elseif executable('ack-grep')
-    "             let s:ctrlp_fallback = 'ack-grep %s --nocolor -f'
-    "         elseif executable('ack')
-    "             let s:ctrlp_fallback = 'ack %s --nocolor -f'
-    "         " On Windows use "dir" as fallback command.
-    "         elseif WINDOWS()
-    "             let s:ctrlp_fallback = 'dir %s /-n /b /s /a-d'
-    "         else
-    "             let s:ctrlp_fallback = 'find %s -type f'
-    "         endif
-    "         if exists("g:ctrlp_user_command")
-    "             unlet g:ctrlp_user_command
-    "         endif
-    "         let g:ctrlp_user_command = {
-    "             \ 'types': {
-    "                 \ 1: ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others'],
-    "                 \ 2: ['.hg', 'hg --cwd %s locate -I .'],
-    "             \ },
-    "             \ 'fallback': s:ctrlp_fallback
-    "         \ }
-
-    "         if isdirectory(expand("~/.vim/bundle/ctrlp-funky/"))
-    "             " CtrlP extensions
-    "             let g:ctrlp_extensions = ['funky']
-
-    "             "funky
-    "             nnoremap <Leader>fu :CtrlPFunky<Cr>
-    "         endif
-    "     endif
-    " "}
-
-    " " TagBar {
-    "     if isdirectory(expand("~/.vim/bundle/tagbar/"))
-    "         nnoremap <silent> <leader>tt :TagbarToggle<CR>
-    "     endif
-    " "}
-
-    " " Rainbow {
-    "     if isdirectory(expand("~/.vim/bundle/rainbow/"))
-    "         let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
-    "     endif
-    " "}
-
-    " " Fugitive {
-    "     if isdirectory(expand("~/.vim/bundle/vim-fugitive/"))
-    "         nnoremap <silent> <leader>gs :Gstatus<CR>
-    "         nnoremap <silent> <leader>gd :Gdiff<CR>
-    "         nnoremap <silent> <leader>gc :Gcommit<CR>
-    "         nnoremap <silent> <leader>gb :Gblame<CR>
-    "         nnoremap <silent> <leader>gl :Glog<CR>
-    "         nnoremap <silent> <leader>gp :Git push<CR>
-    "         nnoremap <silent> <leader>gr :Gread<CR>
-    "         nnoremap <silent> <leader>gw :Gwrite<CR>
-    "         nnoremap <silent> <leader>ge :Gedit<CR>
-    "         " Mnemonic _i_nteractive
-    "         nnoremap <silent> <leader>gi :Git add -p %<CR>
-    "         nnoremap <silent> <leader>gg :SignifyToggle<CR>
-    "     endif
-    " "}
 
     " " YouCompleteMe {
     "     if count(g:spf13_bundle_groups, 'youcompleteme')
@@ -1021,33 +1153,6 @@ let g:deoplete#enable_at_startup = 1
     "     endif
     " " }
 
-    " " Snippets {
-    "     if count(g:spf13_bundle_groups, 'neocomplcache') ||
-    "                 \ count(g:spf13_bundle_groups, 'neocomplete')
-
-    "         " Use honza's snippets.
-    "         let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
-
-    "         " Enable neosnippet snipmate compatibility mode
-    "         let g:neosnippet#enable_snipmate_compatibility = 1
-
-    "         " For snippet_complete marker.
-    "         if !exists("g:spf13_no_conceal")
-    "             if has('conceal')
-    "                 set conceallevel=2 concealcursor=i
-    "             endif
-    "         endif
-
-    "         " Enable neosnippets when using go
-    "         let g:go_snippet_engine = "neosnippet"
-
-    "         " Disable the neosnippet preview candidate window
-    "         " When enabled, there can be too much visual noise
-    "         " especially when splits are used.
-    "         set completeopt-=preview
-    "     endif
-    " " }
-
     " " FIXME: Isn't this for Syntastic to handle?
     " " Haskell post write lint and check with ghcmod
     " " $ `cabal install ghcmod` if missing and ensure
@@ -1055,14 +1160,6 @@ let g:deoplete#enable_at_startup = 1
     " if !executable("ghcmod")
     "     autocmd BufWritePost *.hs GhcModCheckAndLintAsync
     " endif
-
-    " " UndoTree {
-    "     if isdirectory(expand("~/.vim/bundle/undotree/"))
-    "         nnoremap <Leader>u :UndotreeToggle<CR>
-    "         " If undotree is opened, it is likely one wants to interact with it.
-    "         let g:undotree_SetFocusWhenToggle=1
-    "     endif
-    " " }
 
     " " indent_guides {
     "     if isdirectory(expand("~/.vim/bundle/vim-indent-guides/"))
@@ -1078,282 +1175,4 @@ let g:deoplete#enable_at_startup = 1
     "             \ "html,xml" : ["at"],
     "             \ }
     " " }
-
-    " " vim-airline {
-    "     " Set configuration options for the statusline plugin vim-airline.
-    "     " Use the powerline theme and optionally enable powerline symbols.
-    "     " To use the symbols , , , , , , and .in the statusline
-    "     " segments add the following to your .vimrc.before.local file:
-    "     "   let g:airline_powerline_fonts=1
-    "     " If the previous symbols do not render for you then install a
-    "     " powerline enabled font.
-
-    "     " See `:echo g:airline_theme_map` for some more choices
-    "     " Default in terminal vim is 'dark'
-    "     if isdirectory(expand("~/.vim/bundle/vim-airline-themes/"))
-    "         if !exists('g:airline_theme')
-    "             let g:airline_theme = 'solarized'
-    "         endif
-    "         if !exists('g:airline_powerline_fonts')
-    "             " Use the default set of separators with a few customizations
-    "             let g:airline_left_sep='›'  " Slightly fancier than '>'
-    "             let g:airline_right_sep='‹' " Slightly fancier than '<'
-    "         endif
-    "     endif
-    " " }
-
-
-
-" }
-
-" GUI Settings {
-
-    " GVIM- (here instead of .gvimrc)
-    " if has('gui_running')
-    "     set guioptions-=T           " Remove the toolbar
-    "     set lines=40                " 40 lines of text instead of 24
-    "     if LINUX() && has("gui_running")
-    "         set guifont=Andale\ Mono\ Regular\ 12,Menlo\ Regular\ 11,Consolas\ Regular\ 12,Courier\ New\ Regular\ 14
-    "     elseif OSX() && has("gui_running")
-    "         set guifont=Andale\ Mono\ Regular:h12,Menlo\ Regular:h11,Consolas\ Regular:h12,Courier\ New\ Regular:h14
-    "     elseif WINDOWS() && has("gui_running")
-    "         set guifont=Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
-    "     endif
-    " else
-    "     if &term == 'xterm' || &term == 'screen'
-    "         set t_Co=256            " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
-    "     endif
-    "     "set term=builtin_ansi       " Make arrow and other keys work
-    " endif
-
-" " }
-
-" " Functions {
-
-
-    " " Initialize NERDTree as needed {
-    " function! NERDTreeInitAsNeeded()
-    "     redir => bufoutput
-    "     buffers!
-    "     redir END
-    "     let idx = stridx(bufoutput, "NERD_tree")
-    "     if idx > -1
-    "         NERDTreeMirror
-    "         NERDTreeFind
-    "         wincmd l
-    "     endif
-    " endfunction
-    " " }
-
-    " " Strip whitespace {
-    " function! StripTrailingWhitespace()
-    "     " Preparation: save last search, and cursor position.
-    "     let _s=@/
-    "     let l = line(".")
-    "     let c = col(".")
-    "     " do the business:
-    "     %s/\s\+$//e
-    "     " clean up: restore previous search history, and cursor position
-    "     let @/=_s
-    "     call cursor(l, c)
-    " endfunction
-    " " }
-
-    " " Shell command {
-    " function! s:RunShellCommand(cmdline)
-    "     botright new
-
-    "     setlocal buftype=nofile
-    "     setlocal bufhidden=delete
-    "     setlocal nobuflisted
-    "     setlocal noswapfile
-    "     setlocal nowrap
-    "     setlocal filetype=shell
-    "     setlocal syntax=shell
-
-    "     call setline(1, a:cmdline)
-    "     call setline(2, substitute(a:cmdline, '.', '=', 'g'))
-    "     execute 'silent $read !' . escape(a:cmdline, '%#')
-    "     setlocal nomodifiable
-    "     1
-    " endfunction
-
-    " command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
-    " " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
-    " " }
-
-    " function! s:IsSpf13Fork()
-    "     let s:is_fork = 0
-    "     let s:fork_files = ["~/.vimrc.fork", "~/.vimrc.before.fork", "~/.vimrc.bundles.fork"]
-    "     for fork_file in s:fork_files
-    "         if filereadable(expand(fork_file, ":p"))
-    "             let s:is_fork = 1
-    "             break
-    "         endif
-    "     endfor
-    "     return s:is_fork
-    " endfunction
-     
-    " function! s:ExpandFilenameAndExecute(command, file)
-    "     execute a:command . " " . expand(a:file, ":p")
-    " endfunction
-     
-    " function! s:EditSpf13Config()
-    "     call <SID>ExpandFilenameAndExecute("tabedit", "~/.vimrc")
-    "     call <SID>ExpandFilenameAndExecute("vsplit", "~/.vimrc.before")
-    "     call <SID>ExpandFilenameAndExecute("vsplit", "~/.vimrc.bundles")
-     
-    "     execute bufwinnr(".vimrc") . "wincmd w"
-    "     call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.local")
-    "     wincmd l
-    "     call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.before.local")
-    "     wincmd l
-    "     call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.bundles.local")
-     
-    "     if <SID>IsSpf13Fork()
-    "         execute bufwinnr(".vimrc") . "wincmd w"
-    "         call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.fork")
-    "         wincmd l
-    "         call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.before.fork")
-    "         wincmd l
-    "         call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.bundles.fork")
-    "     endif
-     
-    "     execute bufwinnr(".vimrc.local") . "wincmd w"
-    " endfunction
-     
-    " execute "noremap " . s:spf13_edit_config_mapping " :call <SID>EditSpf13Config()<CR>"
-    " execute "noremap " . s:spf13_apply_config_mapping . " :source ~/.vimrc<CR>"
-" " }
-
-" " Use fork vimrc if available {
-    " if filereadable(expand("~/.vimrc.fork"))
-    "     source ~/.vimrc.fork
-    " endif
-" " }
-
-" " Use local vimrc if available {
-    " if filereadable(expand("~/.vimrc.local"))
-    "     source ~/.vimrc.local
-    " endif
-" " }
-
-" " Use local gvimrc if available and gui is running {
-    " if has('gui_running')
-    "     if filereadable(expand("~/.gvimrc.local"))
-    "         source ~/.gvimrc.local
-    "     endif
-    " endif
-" " }
-"
-"
-"
-"
-"
-"
-" my ================================================
-"
-" set wrap
-" 
-" unmap <
-" unmap >
-" 
-" set guifont=Monospace\ 13
-" 
-" set fileencodings=utf-8,chinese,GB18030,latin-1
-" set fileformats=unix,dos,mac "Default file types
-" 
-" set foldmethod=marker
-" 
-" set nospell
-" 
-" map <C-j> <C-W>j
-" map <C-k> <C-W>k
-" map <C-h> <C-W>h
-" map <C-l> <C-W>l
-" 
-" "  In visual mode when you press * or # to search for the current selection
-" vnoremap <silent> * :call VisualSearch('f')<CR>
-" vnoremap <silent> # :call VisualSearch('b')<CR>
-" 
-" " When you press gv you vimgrep after the selected text
-" vnoremap <silent> gv :call VisualSearch('gv')<CR>
-" 
-" function! CmdLine(str)
-"     exe "menu Foo.Bar :" . a:str
-"     emenu Foo.Bar
-"     unmenu Foo
-" endfunction 
-" 
-" " From an idea by Michael Naumann
-" function! VisualSearch(direction) range
-"     let l:saved_reg = @"
-"     execute "normal! vgvy"
-" 
-"     let l:pattern = escape(@", '\\/.*$^~[]')
-"     let l:pattern = substitute(l:pattern, "\n$", "", "")
-" 
-"     if a:direction == 'b'
-"         execute "normal ?" . l:pattern . "^M"
-"     elseif a:direction == 'gv'
-"         call CmdLine("vimgrep " . '/'. l:pattern . '/' . ' **/*.')
-"     elseif a:direction == 'f'
-"         execute "normal /" . l:pattern . "^M"
-"     endif
-" 
-"     let @/ = l:pattern
-"     let @" = l:saved_reg
-" endfunction
-" 
-" " => unite {{{2
-" nnoremap <leader>s :Unite -start-insert buffer file_mru file <CR>
-" 
-" let g:unite_source_history_yank_enable=1
-" let g:unite_source_file_mru_long_limit = 500
-" 
-" " Close the current buffer
-" map <leader>bd :Bclose<cr>
-" 
-" command! Bclose call <SID>BufcloseCloseIt()
-" function! <SID>BufcloseCloseIt()
-"    let l:currentBufNum = bufnr("%")
-"    let l:alternateBufNum = bufnr("#")
-" 
-"    if buflisted(l:alternateBufNum)
-"      buffer #
-"    else
-"      bnext
-"    endif
-" 
-"    if bufnr("%") == l:currentBufNum
-"      new
-"    endif
-" 
-"    if buflisted(l:currentBufNum)
-"      execute("bdelete! ".l:currentBufNum)
-"    endif
-" endfunction
-" 
-" let g:UltiSnipsSnippetDirectories=['UltiSnips', '/home/dersu/.vim/PluginConf/UltiSnips']
-" 
-" 
-" " => YouCompleteMe {{{2
-" " for ycm
-" " let g:ycm_error_symbol = '>>'
-" " let g:ycm_warning_symbol = '>*'
-" " let g:ycm_autoclose_preview_window_after_completion = 1
-" let g:ycm_server_python_interpreter = '/usr/bin/python'
-" nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
-" 
-" " => indent guides{{{2
-" let g:indent_guides_enable_on_vim_startup = 1
-" let g:indent_guides_start_level = 2
-" let g:indent_guides_guide_size = 1
-" 
-" " command! DlogFrame :r !ssh -i /home/dersu/Backup/Dropbox/Backup/keys/ec2/ec2-dev-ubuntu.pem ubuntu@tei2.info outlinerHelper/combinelinux.py
-" " command! DlogFrame :r !cus-taskwarrior.py
-" command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
-" " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
-" " command! DlogFrame :r !/home/dersu/Backup/Dropbox/Apps/scripts/outlinerHelper/outlinerHelper.py --mode gen -o /home/dersu/Backup/Dropbox/Briefcase/Checklist/ToDo_Outline.otl
-" command! -nargs=1 DlogFrameDate :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>"
-" " command! -nargs=1 DlogFrameDate :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>" --enddate "<args>"
+" }}}
