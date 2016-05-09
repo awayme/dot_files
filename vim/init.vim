@@ -1,4 +1,10 @@
 let g:consolidated_directory = $HOME . '/Data/Documents/vimfiles/'
+let g:UltiSnipsMinePath = $HOME . '/Data/scripts/dot_files/vim/PluginConf/'
+let plugin_manager_path = $HOME . '/.config/nvim/plugins/'
+if has('nvim')
+    let g:python_host_prog = $HOME . '/.config/nvim/env2/bin/python'
+    let g:python3_host_prog = $HOME . '/.config/nvim/env3/bin/python'
+endif
 
 " Environment {{{
     " Identify platform {
@@ -34,6 +40,7 @@ let g:consolidated_directory = $HOME . '/Data/Documents/vimfiles/'
             inoremap <silent> <C-[>OC <RIGHT>
         endif
     " }
+    
 " }}}
 " General {{{
     let mapleader = ','
@@ -468,8 +475,7 @@ endif
     " map <leader>gp :vimgrep // **/*.<left><left><left><left><left><left><left>
 " }}}
 " Plugins {{{
-    " " call plug#begin('~/.vim/plugged')
-    call plug#begin('/home/dersu/.config/nvim/plugins')
+    call plug#begin(plugin_manager_path)
 
     Plug 'https://github.com/junegunn/vim-plug'
 
@@ -478,13 +484,13 @@ endif
     Plug 'https://github.com/freeo/vim-kalisi'
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
-    " Plug 'bling/vim-bufferline'
+    Plug 'bling/vim-bufferline'
     Plug 'altercation/vim-colors-solarized'
-    "Bundle 'powerline/fonts'
+    Plug 'Konfekt/FastFold'
 
     " " Edit
     Plug 'https://github.com/wsdjeg/vim-mundo.git', { 'on':  'MundoToggle' }
-    " Plug 'scrooloose/nerdtree'
+    Plug 'scrooloose/nerdtree'
     Plug 'https://github.com/lilydjwg/fcitx.vim'
     Plug 'https://github.com/kshenoy/vim-signature'
     Plug 'luochen1990/rainbow'
@@ -493,7 +499,7 @@ endif
     Plug 'https://github.com/Shougo/neomru.vim'
     " Plug 'https://github.com/dhruvasagar/vim-table-mode.git'
     " Plug 'https://github.com/mhinz/vim-grepper.git'
-    Plug 'https://github.com/airodactyl/neovim-ranger.git'
+    " Plug 'https://github.com/airodactyl/neovim-ranger.git'
     Plug 'https://github.com/scrooloose/syntastic.git'
     Plug 'https://github.com/Yggdroot/indentLine'
     Plug 'terryma/vim-multiple-cursors'
@@ -505,16 +511,17 @@ endif
     " Developement
     Plug 'https://github.com/benekastah/neomake.git'
     Plug 'KabbAmine/zeavim.vim'
-    Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
     Plug 'gorodinskiy/vim-coloresque'
     Plug 'hail2u/vim-css3-syntax'
     Plug 'tpope/vim-commentary'
-    Plug 'https://github.com/tpope/vim-fugitive'
+    Plug 'https://github.com/tpope/vim-fugitive.git'
     Plug 'https://github.com/majutsushi/tagbar'
+    Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
     function! DoRemote(arg)
       UpdateRemotePlugins
     endfunction
     Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
+    Plug 'zchee/deoplete-jedi'
 
     " file type
     Plug 'https://github.com/dag/vim-fish.git'
@@ -529,25 +536,18 @@ endif
     "Plug 'reedes/vim-textobj-quote'
     "Plug 'reedes/vim-wordy'
     "Plug 'osyo-manga/vim-over'
-    "Plug 'spf13/vim-preview'
     "Plug 'tpope/vim-abolish.git'
     "Plug 'osyo-manga/vim-over'
     "Plug 'kana/vim-textobj-user'
     "Plug 'kana/vim-textobj-indent'
     "Plug 'gcmt/wildfire.vim'
-    "Plug 'vim-scripts/restore_view.vim'
-    "Plug 'mbbill/undotree'
-    "Plug 'klen/python-mode'
     "Plug 'mattn/emmet-vim' 
     " UnBundle 'jiangmiao/auto-pairs'
     " UnBundle 'rhysd/conflict-marker.vim'
     " UnBundle 'amirh/HTML-AutoCloseTag'
     " UnBundle 'matchit.zip'
-
-    "     NeoBundle 'https://github.com/Chiel92/vim-autoformat'
-    " Bundle 'https://github.com/dhruvasagar/vim-table-mode.git'
-    " " Bundle 'https://github.com/mhinz/vim-grepper.git'
-
+    " NeoBundle 'https://github.com/Chiel92/vim-autoformat'
+    
     " Add plugins to &runtimepath
     call plug#end()
 " }}}
@@ -558,12 +558,31 @@ endif
     " }}}
     " => unite {{{
         let g:unite_source_history_yank_enable=1
-        let g:unite_source_file_mru_long_limit = 500
-        nnoremap <leader>s :Unite -start-insert buffer file_mru file <CR>
+        let g:unite_source_file_mru_long_limit = 100
+        nnoremap <leader>s :Unite -start-insert buffer file_mru<CR>
     " }}}
     " => deoplete {{{
         let g:deoplete#enable_at_startup = 1
-        " deoplete#enable()
+        let g:deoplete#disable_auto_complete = 1
+		" inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
+		" inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
+        " inoremap <silent><expr><C-l> deoplete#mappings#manual_complete()
+        " inoremap <silent><expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <silent><expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+
+    " }}}
+    " => UltiSnip {{{
+        let g:UltiSnipsExpandTrigger="<c-j>"
+
+        if exists('g:UltiSnipsMinePath')
+            let &runtimepath.= ','.g:UltiSnipsMinePath
+        endif
+        " autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
+        
+        " " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+        " let g:UltiSnipsExpandTrigger="<tab>"
+        " let g:UltiSnipsJumpForwardTrigger="<tab>"
+        " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
     " }}}
     " => Rainbow {{{
         let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
@@ -614,47 +633,37 @@ endif
             let g:airline_right_sep='‹' " Slightly fancier than '<'
         endif
     " }}}
-    " =>  snips {{{
-        let g:UltiSnipsSnippetDirectories=['UltiSnips', '/home/dersu/.vim/PluginConf/UltiSnips']
+    " => NERDTree plugin {{{
+        map <C-e> :NERDTreeToggle<CR>
+        map <leader>e :NERDTreeFind<CR>
+        nmap <leader>nt :NERDTreeFind<CR>
 
-        " " Snippets {
-        "         " Use honza's snippets.
-        "         " let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
-
-        "         " Enable neosnippet snipmate compatibility mode
-        "         let g:neosnippet#enable_snipmate_compatibility = 1
-
-        "         " For snippet_complete marker.
-        "         if has('conceal')
-        "             set conceallevel=2 concealcursor=i
-        "         endif
-
-        "         " Enable neosnippets when using go
-        "         let g:go_snippet_engine = "neosnippet"
-
-        "         " Disable the neosnippet preview candidate window
-        "         " When enabled, there can be too much visual noise
-        "         " especially when splits are used.
-        "         set completeopt-=preview
-        "     endif
-        " " }
+        " let g:NERDShutUp=1
+        let NERDTreeShowBookmarks=1
+        let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
+        let NERDTreeChDirMode=0
+        let NERDTreeQuitOnOpen=1
+        let NERDTreeMouseMode=2
+        let NERDTreeShowHidden=1
+        let NERDTreeKeepTreeInNewTab=1
+        let g:nerdtree_tabs_open_on_gui_startup=0
     " }}}
 "}}}
 " Functions {{{
 
-    " " Initialize NERDTree as needed {
-    " function! NERDTreeInitAsNeeded()
-    "     redir => bufoutput
-    "     buffers!
-    "     redir END
-    "     let idx = stridx(bufoutput, "NERD_tree")
-    "     if idx > -1
-    "         NERDTreeMirror
-    "         NERDTreeFind
-    "         wincmd l
-    "     endif
-    " endfunction
-    " " }
+    " Initialize NERDTree as needed {
+    function! NERDTreeInitAsNeeded()
+        redir => bufoutput
+        buffers!
+        redir END
+        let idx = stridx(bufoutput, "NERD_tree")
+        if idx > -1
+            NERDTreeMirror
+            NERDTreeFind
+            wincmd l
+        endif
+    endfunction
+    " }
 
     " Strip whitespace {
     function! StripTrailingWhitespace()
@@ -692,14 +701,11 @@ endif
     " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
 " }}}
 " my self-system {{{
-" command! DlogFrame :r !ssh -i /home/dersu/Backup/Dropbox/Backup/keys/ec2/ec2-dev-ubuntu.pem ubuntu@tei2.info outlinerHelper/combinelinux.py
-" command! DlogFrame :r !cus-taskwarrior.py
-command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
-" command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
-" command! DlogFrame :r !/home/dersu/Backup/Dropbox/Apps/scripts/outlinerHelper/outlinerHelper.py --mode gen -o /home/dersu/Backup/Dropbox/Briefcase/Checklist/ToDo_Outline.otl
-command! -nargs=1 DlogFrameDate :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>"
-" command! -nargs=1 DlogFrameDate :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>" --enddate "<args>"
+    command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
+    command! -nargs=1 DlogFrameDate :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>"
+    " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
 " }}}
+
 " offlines {{{
 " " => syntastic
 " let g:syntastic_python_checkers=['flake8']
@@ -709,17 +715,7 @@ command! -nargs=1 DlogFrameDate :r !~/Data/scripts/Self-productive/timecamp/env/
 " " let g:syntastic_quiet_warnings=1
 " let g:syntastic_quiet_messages={'level':'warnings'}
 
-" " => NERDTree plugin
-" nnoremap <silent> <F7> :NERDTreeToggle<CR>
 
-" " => UltiSnip
-" let g:UltiSnipsExpandTrigger="<c-j>"
-" let s:Rtpath = &runtimepath
-" let s:Rtpath = s:Rtpath.','.$MyVIMPath.'PluginConf'
-
-" let &runtimepath = s:Rtpath
-
-" autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
 
 " " Plugins {
     " if !exists('g:override_spf13_bundles') && filereadable(expand("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
@@ -754,9 +750,6 @@ command! -nargs=1 DlogFrameDate :r !~/Data/scripts/Self-productive/timecamp/env/
     " " }
 
     " " Misc {
-    "     if isdirectory(expand("~/.vim/bundle/nerdtree"))
-    "         let g:NERDShutUp=1
-    "     endif
     "     if isdirectory(expand("~/.vim/bundle/matchit.zip"))
     "         let b:match_ignorecase = 1
     "     endif
@@ -815,22 +808,6 @@ command! -nargs=1 DlogFrameDate :r !~/Data/scripts/Self-productive/timecamp/env/
     "     let g:snips_author = 'Steve Francia <steve.francia@gmail.com>'
     " " }
 
-    " " NerdTree {
-    "     if isdirectory(expand("~/.vim/bundle/nerdtree"))
-    "         map <C-e> <plug>NERDTreeTabsToggle<CR>
-    "         map <leader>e :NERDTreeFind<CR>
-    "         nmap <leader>nt :NERDTreeFind<CR>
-
-    "         let NERDTreeShowBookmarks=1
-    "         let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
-    "         let NERDTreeChDirMode=0
-    "         let NERDTreeQuitOnOpen=1
-    "         let NERDTreeMouseMode=2
-    "         let NERDTreeShowHidden=1
-    "         let NERDTreeKeepTreeInNewTab=1
-    "         let g:nerdtree_tabs_open_on_gui_startup=0
-    "     endif
-    " " }
 
     " " Tabularize {
     "     if isdirectory(expand("~/.vim/bundle/tabular"))
