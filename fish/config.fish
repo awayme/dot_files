@@ -1,11 +1,9 @@
-set fisher_home ~/.local/share/fisherman
-set fisher_config ~/.config/fisherman
-source $fisher_home/config.fish
+source /usr/share/fish/config.fish
 
 set -x EDITOR vim
 set -x LC_TIME 'en_US.UTF-8'
 
-fish_vi_mode
+fish_vi_key_bindings
 
 function tree
     find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
@@ -24,12 +22,19 @@ function j
     end
 end
 
+function v
+    source (string trim -r -c / $argv[1])/bin/activate.fish
+    # if set -q argv[2] 
+    #     echo $argv[2]
+    # end
+end
+
 function ve
     source env/bin/activate.fish
 end
 
 function vetimecamp
-    cd ~/Data/My_Scripts/Self-productive/timecamp
+    cd ~/Data/scripts/Self-productive/timecamp/
     ve
 end
 
@@ -40,7 +45,7 @@ function vescrpits
 end
 
 function vespider 
-    cd ~/NoSync/Projects/20150422.SpiderStack/
+    cd ~/Data/Projects/20150422.SpiderStack/
     ve
     cd spiders/scrapyframe/scrapyframe
 end
@@ -68,7 +73,7 @@ function veemulator
 end
 
 function anaconda
-    set -gx PATH /opt/anaconda/bin $PATH 
+    set -gx PATH /opt/anaconda2/bin $PATH 
 end
 
 function calculator
@@ -98,5 +103,37 @@ end
 
 set -gx PATH $manpath_sorted
 # set -gx PATH ~/bin $PATH /usr/local/heroku/bin
+# set -gx NVIM_LISTEN_ADDRESS /tmp/nvimsocket
+# set -gx SPARK_HOME /opt/spark
 
 # eval (thefuck --alias | tr '\n' ';')
+
+# fish git prompt
+set __fish_git_prompt_showdirtystate 'yes'
+set __fish_git_prompt_showstashstate 'yes'
+set __fish_git_prompt_showupstream 'yes'
+set __fish_git_prompt_color_branch yellow
+# set __fish_git_prompt_showuntrackedfiles 'yes'
+
+set -g __fish_git_prompt_color_branch yellow
+set -g __fish_git_prompt_color_upstream_ahead green
+set -g __fish_git_prompt_color_upstream_behind red
+
+# Status Chars
+set __fish_git_prompt_char_dirtystate '⚡'
+set __fish_git_prompt_char_stagedstate '→'
+set __fish_git_prompt_char_stashstate '↩'
+set __fish_git_prompt_char_conflictedstate "✖"
+set __fish_git_prompt_char_upstream_ahead '↑'
+set __fish_git_prompt_char_upstream_behind '↓'
+set __fish_git_prompt_char_cleanstate "✔"
+# set __fish_git_prompt_char_untrackedfiles '☡'
+ 
+function fish_prompt
+        set last_status $status
+        set_color $fish_color_cwd
+        printf '%s' (prompt_pwd)
+        set_color normal
+        printf '%s ' (__fish_git_prompt)
+       set_color normal
+end
