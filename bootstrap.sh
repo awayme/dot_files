@@ -60,7 +60,7 @@ variable_set() {
 
 lnif() {
     if [ -e "$1" ]; then
-        echo 'ln -sf "$1" "$2"'
+        ln -sf "$1" "$2"
     fi
     ret="$?"
     debug
@@ -133,8 +133,8 @@ install_widgets() {
     sudo apt-get update
     sudo apt-get install vim fish fasd ripgrep 
 
-    wget https://github.com/sharkdp/fd/releases/download/v7.2.0/fd_7.2.0_i386.deb
-    sudo apt-get install fd_7.2.0_i386.deb
+    wget https://github.com/sharkdp/fd/releases/download/v7.2.0/fd_7.2.0_amd64.deb
+    sudo dpkg -i fd_7.2.0_amd64.deb
     rm fd_7.2.0_i386.deb
     
     sync_repo           "$HOME/bin/ranger" \
@@ -144,13 +144,13 @@ install_widgets() {
 
     mv ~/.config/ranger ~/.config/ranger.org
 
+                        #"--depth 1 https://github.com/junegunn/fzf.git" \
     sync_repo           "$HOME/.fzf" \
-                        " --depth 1 https://github.com/junegunn/fzf.git" \
+                        "https://github.com/junegunn/fzf.git" \
                         "master" \
                         "fzf"
     cd ~/.fzf
     ./install
-    rm install
 
     mkdir -p ~/.config/vimfiles/persistence
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -159,7 +159,6 @@ install_widgets() {
     curl -L https://get.oh-my.fish > install
     fish install 
     rm install 
-    echo "omf install fasd"
 }
 
 change_sh() {
@@ -187,11 +186,14 @@ sync_repo           "$APP_PATH" \
                     "$REPO_BRANCH" \
                     "$app_name"
 
-change_sh
 
 install_widgets
+
+change_sh
 
 create_symlinks     "$APP_PATH" \
                     "$HOME"
 
+msg "omf install fasd"
+msg "vim: Plug install"
 msg             "\nThanks for installing $app_name."
