@@ -60,7 +60,7 @@ variable_set() {
 
 lnif() {
     if [ -e "$1" ]; then
-        ln -sf "$1" "$2"
+        echo 'ln -sf "$1" "$2"'
     fi
     ret="$?"
     debug
@@ -111,6 +111,10 @@ create_symlinks() {
     lnif "$source_path/vim/init.vim"     "$target_path/.vimrc"
     lnif "$source_path/tmux/tmux.conf"   "$target_path/.tmux.conf"
 
+    lnif "$source_path/ranger"   "$target_path/.config/ranger"
+    lnif "$source_path/ranger/rc.conf.linux" "$source_path/ranger/rc.conf"
+    lnif "$source_path/ranger/rifle.conf.linux" "$source_path/ranger/rifle.conf"
+
     #if program_exists "nvim"; then
     #    lnif "$source_path/.vim"       "$target_path/.config/nvim"
     #    lnif "$source_path/.vimrc"     "$target_path/.config/nvim/init.vim"
@@ -137,6 +141,8 @@ install_widgets() {
                         "$RANGER_URI" \
                         "master" \
                         "ranger"
+
+    mv ~/.config/ranger ~/.config/ranger.org
 
     sync_repo           "$HOME/.fzf" \
                         " --depth 1 https://github.com/junegunn/fzf.git" \
