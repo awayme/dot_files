@@ -94,7 +94,12 @@ switch (uname)
         set -gx CLASSPATH $JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
 
         set --local manpath_list ~/bin /usr/local/opt/coreutils/libexec/gnubin /usr/local/opt/openssl@1.1/bin /usr/local/opt/sqlite/bin /usr/local/opt/sphinx-doc/bin /usr/local/bin/ /usr/local/opt/mysql@5.7/bin $JAVA_HOME/bin $PATH 
-
+        set --local manpath_sorted
+        for i in $manpath_list
+            if not contains $i $manpath_sorted
+                set manpath_sorted $manpath_sorted $i
+            end
+        end
         set -gx PATH $manpath_sorted
         set -gx MANPATH /usr/local/opt/coreutils/libexec/gnuman $MANPATH
 
@@ -104,14 +109,7 @@ switch (uname)
     case '*'
         echo Hi, stranger!
 end
-
 # remove duplicates from the list
-set --local manpath_sorted
-for i in $manpath_list
-    if not contains $i $manpath_sorted
-        set manpath_sorted $manpath_sorted $i
-    end
-end
 
 #set -g fish_user_paths "/usr/local/opt/node@6/bin" $fish_user_paths
 #set -x LDFLAGS  -L/usr/local/opt/node@6/lib
