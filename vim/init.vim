@@ -1,5 +1,6 @@
-let g:consolidated_directory = $HOME . '/Data/Documents/vimfiles/'
-let g:UltiSnipsMinePath = $HOME . '/Data/Documents/dot_files/vim/PluginConf/'
+let g:consolidated_directory = $HOME . '/.config/vimfiles/persistence/'
+
+let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
 
 let plugin_manager_path = $HOME . '/.config/vimfiles/plugins/'
 if has('nvim')
