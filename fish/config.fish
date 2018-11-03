@@ -1,26 +1,42 @@
-source /usr/share/fish/config.fish
+# source /usr/share/fish/config.fish
+source /usr/local/etc/fish/config.fish
 
-set -x EDITOR vim
+set -x EDITOR mvim
 set -x LC_TIME 'en_US.UTF-8'
+set -x LC_CTYPE 'en_US.UTF-8'
 
 fish_vi_key_bindings
+
+# will cause title issue in iTerm2
+function fish_title
+    # echo $argv[1]
+    # echo $_ ' '
+    if [ $RANGER_LEVEL ]
+        printf '[Ranger]'
+    end
+
+    echo $argv
+    printf ' | %s' (prompt_pwd)
+end
 
 function tree
     find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
 end
 
-function j
-    set new_path (autojump $argv)
+# function j
+#     set new_path (autojump $argv)
 
-    if test -d "$new_path"
-        echo $new_path
-        cd "$new_path"
-    else
-        echo "autojump: directory '$argv' not found"
-        echo "Try \`autojump --help\` for more information."
-        false
-    end
-end
+#     if test -d "$new_path"
+#         echo $new_path
+#         cd "$new_path"
+#     else
+#         echo "autojump: directory '$argv' not found"
+#         echo "Try \`autojump --help\` for more information."
+#         false
+#     end
+# end
+#
+alias supervisorctl "supervisorctl -c /usr/local/etc/supervisor/supervisord.conf"
 
 function v
     source (string trim -r -c / $argv[1])/bin/activate.fish
@@ -33,66 +49,49 @@ function ve
     source env/bin/activate.fish
 end
 
-function vetimecamp
-    cd ~/Data/scripts/Self-productive/timecamp/
-    ve
-end
+# function vetimecamp
+#     cd ~/Projects/Self-productive
+#     ve
+#     cd timecamp
+# end
 
-function vescrpits
-    cd ~/Data/My_Scripts/scripts/
-    ve
-    cd scripts
-end
-
-function vespider 
-    cd ~/Data/Projects/20150422.SpiderStack/
-    ve
-    cd spiders/scrapyframe/scrapyframe
-end
-
-function vefabric
-    cd ~/Data/Projects/20150825.fabric
-    ve
-end
-
-function vezetta
-    cd ~/Data/Projects/20151110.zettayun
-    ve
-    cd inside/Development
-end
-
-function vewebfront
-    cd ~/Data/Projects/20131225.MicroawarenessWebsite/Website_v4_wagtail
-    ve
-    cd source
-end
-
-function veemulator
-    cd ~/Data/scripts/webemulator
-    ve
-end
+# function vescrpits
+#     cd ~/Data/My_Scripts/scripts/
+#     ve
+#     cd scripts
+# end
 
 function anaconda
-    set -gx PATH /opt/anaconda2/bin $PATH 
+    # set -gx PATH /opt/anaconda2/bin $PATH 
+    # set -gx PATH /usr/local/opt/anaconda2/bin/ $PATH
+    set -gx PATH ~/bin/anaconda3/bin/ $PATH
 end
 
 function calculator
     anaconda
-    cd ~/Data/scripts/notebooks
+    cd ~/Data/notebooks
     jupyter-notebook calculator.ipynb
 end
 
 function notebook
     anaconda
-    cd ~/Data/scripts/notebooks
+    cd ~/Data/notebooks
     jupyter-notebook
 end
 
 function mosht
     mosh --no-init -- $argv tmux a -d
+    # /usr/local/bin/mosh --ssh="ssh -i ~/.ssh/id_rsa -p 7722" zibu@104.128.69.20
 end
 
-set --local manpath_list ~/bin $PATH /usr/local/heroku/bin
+
+set -gx JAVA_HOME /Library/Java/JavaVirtualMachines/jdk/Contents/Home
+# set -gx JAVAFX_HOME /Library/Java/JavaVirtualMachines/javafx
+# set -gx JAVAFX_LIB $JAVAFX_HOME/lib
+set -gx CLASSPATH $JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
+
+set --local manpath_list ~/bin /usr/local/opt/coreutils/libexec/gnubin /usr/local/opt/openssl@1.1/bin /usr/local/opt/sqlite/bin /usr/local/opt/sphinx-doc/bin /usr/local/bin/ /usr/local/opt/mysql@5.7/bin $JAVA_HOME/bin $PATH 
+
 # remove duplicates from the list
 set --local manpath_sorted
 for i in $manpath_list
@@ -102,9 +101,19 @@ for i in $manpath_list
 end
 
 set -gx PATH $manpath_sorted
-# set -gx PATH ~/bin $PATH /usr/local/heroku/bin
-# set -gx NVIM_LISTEN_ADDRESS /tmp/nvimsocket
-# set -gx SPARK_HOME /opt/spark
+set -gx MANPATH /usr/local/opt/coreutils/libexec/gnuman $MANPATH
+
+#set -g fish_user_paths "/usr/local/opt/node@6/bin" $fish_user_paths
+#set -x LDFLAGS  -L/usr/local/opt/node@6/lib
+#set -x CPPFLAGS -I/usr/local/opt/node@6/include
+#
+# set -gx LDFLAGS "-L/usr/local/opt/sqlite/lib"
+# set -gx CPPFLAGS "-I/usr/local/opt/sqlite/include"
+# set -gx PKG_CONFIG_PATH "/usr/local/opt/sqlite/lib/pkgconfig"
+#
+# set -gx LDFLAGS "-L/usr/local/opt/openssl@1.1/lib"
+# set -gx CPPFLAGS "-I/usr/local/opt/openssl@1.1/include"
+# set -gx PKG_CONFIG_PATH "/usr/local/opt/openssl@1.1/lib/pkgconfig"
 
 # eval (thefuck --alias | tr '\n' ';')
 
@@ -128,12 +137,21 @@ set __fish_git_prompt_char_upstream_ahead '↑'
 set __fish_git_prompt_char_upstream_behind '↓'
 set __fish_git_prompt_char_cleanstate "✔"
 # set __fish_git_prompt_char_untrackedfiles '☡'
+#
+# kitty + complete setup fish | source
  
 function fish_prompt
+        if [ $RANGER_LEVEL ]
+            printf '[Ranger]'
+        end
+
         set last_status $status
         set_color $fish_color_cwd
         printf '%s' (prompt_pwd)
         set_color normal
         printf '%s ' (__fish_git_prompt)
-       set_color normal
+        set_color normal
 end
+
+test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+

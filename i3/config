@@ -166,16 +166,22 @@ bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 bindsym $mod+shift+d exec --no-startup-id dmenu_run
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+# bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec xfce4-terminal
 bindsym $mod+g exec --no-startup-id google-chrome-stable %U
 # bindsym $mod+g exec --no-startup-id google-chrome-stable --disk-cache-dir="/tmp/chrome/" %U
 # bindsym $mod+g exec --no-startup-id firefox -new-window
+# bindsym $mod+i exec --no-startup-id qnvim
 bindsym $mod+i exec --no-startup-id gvim
-bindsym $mod+t exec --no-startup-id ~/bin/PersonalSystem/countdown.py
+
+bindsym $mod+t exec --no-startup-id ~/Data/scripts/Self-productive/env/bin/python ~/Data/scripts/Self-productive/countdown.py -t 40
 bindsym $mod+period exec --no-startup-id goldendict
+bindsym $mod+comma exec --no-startup-id /home/dersu/bin/DocFetcher-GTK3.sh
 bindsym $mod+p exec --no-startup-id pcmanfm
-
-
+bindsym $mod+z exec --no-startup-id zeal
+# bindsym $mod+n exec --no-startup-id i3-sensible-terminal -e  /opt/anaconda2/bin/jupyter-notebook --notebook-dir=~/Data/scripts/notebooks
+bindsym $mod+n exec --no-startup-id ~/bin/notebook.sh
+# bindsym $mod+n exec --no-startup-id i3-msg 'workspace 7; exec i3-sensible-terminal -e  /opt/anaconda2/bin/jupyter-notebook --notebook-dir=~/Data/scripts/notebooks'
 
 # set $mode_system System (l) lock, (e) logout, (r) reboot, (Shift+s) shutdown
 mode "$mode_system" {
@@ -242,28 +248,25 @@ bindsym $mod+m exec ~/bin/i3wm/i3-wm-scripts/mark
 bindsym $mod+apostrophe exec ~/bin/i3wm/i3-wm-scripts/goto
 #}}}
 
-##X mapper{{{1
-#
-## bindsym XF86AudioMute exec --no-startup-id amixer -q set Master toggle
-#bindsym XF86AudioMute exec --no-startup-id amixer -q -D pulse set Master toggle 
-## bindsym XF86AudioRaiseVolume exec amixer -q set Master 2dB+ unmute
-## bindsym XF86AudioLowerVolume exec amixer -q set Master 2dB- unmute
-#bindsym XF86AudioLowerVolume exec amixer -q -D pulse set Master 5%- unmute
-#bindsym XF86AudioRaiseVolume exec amixer -q -D pulse set Master 5%+ unmute
-## bindsym XF86AudioMicMute exec --no-startup-id 
-#
+#X mapper{{{1
+
+bindsym XF86AudioMute exec --no-startup-id amixer -q -D pulse set Master toggle 
+bindsym XF86AudioLowerVolume exec amixer -q -D pulse set Master 5%- unmute
+bindsym XF86AudioRaiseVolume exec amixer -q -D pulse set Master 5%+ unmute
+# bindsym XF86AudioMute exec --no-startup-id amixer -q set Master toggle
+# bindsym XF86AudioRaiseVolume exec amixer -q set Master 2dB+ unmute
+# bindsym XF86AudioLowerVolume exec amixer -q set Master 2dB- unmute
+# bindsym XF86AudioMicMute exec --no-startup-id 
+
 bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 10
 bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
-#bindsym XF86ScreenSaver exec --no-startup-id i3lock -c 000000
-## bindsym XF86Explorer exec --no-startup-id 
-#
-## bindsym XF86Display
-#
+# bindsym XF86ScreenSaver exec --no-startup-id i3lock -c 000000
+
 bindsym XF86Tools exec --no-startup-id /home/dersu/bin/i3wm/toggleTouchPad.sh
-## bindsym XF86Search exec --no-startup-id 
-## bindsym XF86LaunchA exec --no-startup-id 
-#
-#bindsym XF86Explorer exec --no-startup-id i3lock -c 000000
+# bindsym XF86Search exec --no-startup-id 
+# bindsym XF86LaunchA exec --no-startup-id 
+
+bindsym XF86Explorer exec --no-startup-id i3lock -c 000000
 
 #}}}
 
@@ -305,6 +308,7 @@ for_window [title="Countdown"] floating enable
 #}}}
 
 #auto run{{{1
+# exec --no-startup-id /usr/bin/xrandr --dpi 120
 #exec --no-startup-id "pactl load-module module-switch-on-connect"
 exec --no-startup-id /home/dersu/bin/i3wm/toggleTouchPad.sh
 #exec --no-startup-id /home/dersu/bin/i3wm/synaptis.sh
@@ -317,12 +321,23 @@ exec --no-startup-id blueman-applet
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id rescuetime
 exec --no-startup-id workrave
-exec --no-startup-id "sleep 60s && gvfs-mount smb://da/sda1"
+# exec --no-startup-id "sleep 60s && gvfs-mount smb://da/sda1"
 ## exec --no-startup-id "feh --bg-scale /home/dersu/NoSync/My Ent/cheatsheet.png"
 #
 exec --no-startup-id "~/bin/i3wm/i3previous-server.sh"
-exec --no-startup-id "i3-msg 'workspace 10; append_layout /home/dersu/.config/i3/workspace_10.json'"
+# exec --no-startup-id "i3-msg 'workspace 10; append_layout /home/dersu/.config/i3/workspace_10.json'"
 ## exec --no-startup-id "i3-msg 'workspace 9; exec /usr/bin/google-chrome-stable --disk-cache-dir=/tmp/chrome/ --profile-directory=Default --app-id=emhamhjafffmjoakkmnacgikmgjdfjgp'"
-exec --no-startup-id "/home/dersu/bin/i3wm/workspace.sh"
-exec --no-startup-id i3-msg 'workspace 2; exec i3-sensible-terminal -e ranger.sh'
+# exec --no-startup-id "/home/dersu/bin/i3wm/workspace.sh"
+# exec --no-startup-id i3-msg 'workspace 2; exec i3-sensible-terminal -e ranger.sh'
+exec --no-startup-id i3-msg 'workspace 2; exec xfce4-terminal -e ranger.sh'
+
+# exec --no-startup-id "cd ~/Data/scripts/scripts/scripts/; python sync_wiznotes.py"
+
+exec --no-startup-id google-chrome --new-window  https://workflowy.com/
+exec --no-startup-id google-chrome --new-window  https://www.timecamp.com/app#/timesheets/timer
+exec --no-startup-id google-chrome --new-window  habitica.com/#/tasks
+
+exec --no-startup-id supervisorctl start timecamp
+exec --no-startup-id supervisorctl start selfspy
+
 #}}}

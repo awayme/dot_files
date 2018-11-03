@@ -1,10 +1,12 @@
 let g:consolidated_directory = $HOME . '/Data/Documents/vimfiles/'
-let g:UltiSnipsMinePath = $HOME . '/Data/scripts/dot_files/vim/PluginConf/'
-let plugin_manager_path = $HOME . '/.config/nvim/plugins/'
+let g:UltiSnipsMinePath = $HOME . '/Data/Documents/dot_files/vim/PluginConf/'
+
+let plugin_manager_path = $HOME . '/.config/vimfiles/plugins/'
 if has('nvim')
     let g:python_host_prog = $HOME . '/.config/nvim/env2/bin/python'
     let g:python3_host_prog = $HOME . '/.config/nvim/env3/bin/python'
 endif
+
 
 " Environment {{{
     " Identify platform {
@@ -22,7 +24,7 @@ endif
     " Basics {
         set nocompatible        " Must be first line
         if !WINDOWS()
-            set shell=/bin/sh
+            set shell=/bin/bash
         endif
     " }
 
@@ -41,6 +43,29 @@ endif
         endif
     " }
     
+    " Function to activate a virtualenv in the embedded interpreter for
+    " omnicomplete and other things like that.
+    function LoadVirtualEnv(path)
+        let activate_this = a:path . '/bin/activate_this.py'
+        if getftype(a:path) == "dir" && filereadable(activate_this)
+        python << EOF
+import vim
+activate_this = vim.eval('l:activate_this')
+execfile(activate_this, dict(__file__=activate_this))
+EOF
+        endif
+    endfunction
+    " Load up a 'stable' virtualenv if one exists in ~/.virtualenv
+    " let defaultvirtualenv = $HOME . "/.virtualenvs/stable"
+    let defaultvirtualenv = $HOME . "/bin/activitywatch/env"
+
+    " Only attempt to load this virtualenv if the defaultvirtualenv
+    " actually exists, and we aren't running with a virtualenv active.
+    if has("python")
+        if empty($VIRTUAL_ENV) && getftype(defaultvirtualenv) == "dir"
+            call LoadVirtualEnv(defaultvirtualenv)
+        endif
+    endif
 " }}}
 " General {{{
     let mapleader = ','
@@ -81,6 +106,7 @@ endif
     set viewoptions=folds,options,cursor,unix,slash " Better Unix / Windows compatibility
     " set virtualedit=onemore             " Allow for cursor beyond last character
     set history=1000                    " Store a ton of history (default is 20)
+    exec "set viminfo+=n" . g:consolidated_directory . "viminfo"
     " set spell                           " Spell checking on
     set hidden                          " Allow buffer switching without saving
     " set iskeyword-=.                    " '.' is an end of word designator
@@ -147,8 +173,14 @@ endif
         endfor
     endfunction
     call InitializeDirectories()
+
+    " cm=zip
+    " set cm=blowfish
+    " cm=blowfish2
+
 " }}}
 " Vim UI {{{
+    set title
     set tabpagemax=15               " Only show 15 tabs
     set showmode                    " Display the current mode
 
@@ -233,9 +265,9 @@ endif
         set guioptions-=T           " Remove the toolbar
         set lines=40                " 40 lines of text instead of 24
         if LINUX() && has("gui_running")
-            set guifont=Andale\ Mono\ Regular\ 12,Menlo\ Regular\ 11,Consolas\ Regular\ 12,Courier\ New\ Regular\ 14
+            set guifont=Andale\ Mono\ Regular\ 14,Menlo\ Regular\ 13,Consolas\ Regular\ 14,Courier\ New\ Regular\ 16
         elseif OSX() && has("gui_running")
-            set guifont=Andale\ Mono\ Regular:h12,Menlo\ Regular:h11,Consolas\ Regular:h12,Courier\ New\ Regular:h14
+            set guifont=Andale\ Mono\ Regular:h15,Menlo\ Regular:h15,Consolas\ Regular:h15,Courier\ New\ Regular:h15
         elseif WINDOWS() && has("gui_running")
             set guifont=Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
         endif
@@ -473,18 +505,24 @@ endif
     map <leader>ss :setlocal spell!<cr>
 
     " map <leader>gp :vimgrep // **/*.<left><left><left><left><left><left><left>
+    autocmd FileType python nnoremap <leader>y :0,$!yapf<Cr>
 " }}}
 " Plugins {{{
     call plug#begin(plugin_manager_path)
 
     Plug 'https://github.com/junegunn/vim-plug'
 
+    " self system
+    " Plug 'https://github.com/ActivityWatch/aw-watcher-vim'
+
     " GUI
-    Plug 'https://github.com/equalsraf/neovim-gui-shim.git'
-    Plug 'https://github.com/freeo/vim-kalisi'
+    if has('nvim')
+        Plug 'https://github.com/equalsraf/neovim-gui-shim.git'
+        Plug 'https://github.com/freeo/vim-kalisi'
+    endif
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
-    Plug 'bling/vim-bufferline'
+    " Plug 'bling/vim-bufferline'
     Plug 'altercation/vim-colors-solarized'
     Plug 'Konfekt/FastFold'
 
@@ -493,23 +531,36 @@ endif
     Plug 'scrooloose/nerdtree'
     Plug 'https://github.com/lilydjwg/fcitx.vim'
     Plug 'https://github.com/kshenoy/vim-signature'
-    Plug 'luochen1990/rainbow'
+    Plug 'https://github.com/junegunn/rainbow_parentheses.vim'
     Plug 'https://github.com/Shougo/unite.vim'
     " Plug 'https://github.com/Shougo/denite.nvim.git'
     Plug 'https://github.com/Shougo/neomru.vim'
     " Plug 'https://github.com/dhruvasagar/vim-table-mode.git'
-    " Plug 'https://github.com/mhinz/vim-grepper.git'
+    Plug 'https://github.com/mhinz/vim-grepper.git'
     " Plug 'https://github.com/airodactyl/neovim-ranger.git'
-    Plug 'https://github.com/scrooloose/syntastic.git'
     Plug 'https://github.com/Yggdroot/indentLine'
     Plug 'terryma/vim-multiple-cursors'
     Plug 'easymotion/vim-easymotion'
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-surround'
     Plug 'mhinz/vim-signify'
+    Plug 'osyo-manga/vim-over'
+    Plug 'https://github.com/reedes/vim-litecorrect.git'
 
     " Developement
-    Plug 'https://github.com/benekastah/neomake.git'
+    if has('nvim')
+        Plug 'https://github.com/benekastah/neomake.git'
+        Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
+        function! DoRemote(arg)
+          UpdateRemotePlugins
+        endfunction
+        Plug 'zchee/deoplete-jedi'
+        Plug 'https://github.com/python-rope/ropevim'
+    else
+        Plug 'https://github.com/Valloric/YouCompleteMe'
+        Plug 'https://github.com/scrooloose/syntastic'
+        Plug 'https://github.com/fatih/vim-go'
+    endif
     Plug 'KabbAmine/zeavim.vim'
     Plug 'gorodinskiy/vim-coloresque'
     Plug 'hail2u/vim-css3-syntax'
@@ -517,35 +568,13 @@ endif
     Plug 'https://github.com/tpope/vim-fugitive.git'
     Plug 'https://github.com/majutsushi/tagbar'
     Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-    function! DoRemote(arg)
-      UpdateRemotePlugins
-    endfunction
-    Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
-    Plug 'zchee/deoplete-jedi'
+    Plug 'https://github.com/heracek/HTML-AutoCloseTag'
 
     " file type
     Plug 'https://github.com/dag/vim-fish.git'
-    Plug 'tpope/vim-markdown'
+    " Plug 'tpope/vim-markdown'
 
     "Plug 'klen/python-mode'
-    "Plug 'yssource/python.vim'
-    "Plug 'python_match.vim'
-    "Plug 'pythoncomplete'
-    "Plug 'reedes/vim-litecorrect'
-    "Plug 'reedes/vim-textobj-sentence'
-    "Plug 'reedes/vim-textobj-quote'
-    "Plug 'reedes/vim-wordy'
-    "Plug 'osyo-manga/vim-over'
-    "Plug 'tpope/vim-abolish.git'
-    "Plug 'osyo-manga/vim-over'
-    "Plug 'kana/vim-textobj-user'
-    "Plug 'kana/vim-textobj-indent'
-    "Plug 'gcmt/wildfire.vim'
-    "Plug 'mattn/emmet-vim' 
-    " UnBundle 'jiangmiao/auto-pairs'
-    " UnBundle 'rhysd/conflict-marker.vim'
-    " UnBundle 'amirh/HTML-AutoCloseTag'
-    " UnBundle 'matchit.zip'
     " NeoBundle 'https://github.com/Chiel92/vim-autoformat'
     
     " Add plugins to &runtimepath
@@ -553,14 +582,19 @@ endif
 " }}}
 " Plugin settings {{{
     " => scheme {{{
-        colorscheme kalisi
-        " colorscheme solarized
+        if has('nvim')
+            colorscheme kalisi
+        else
+            colorscheme solarized
+        endif
+
     " }}}
     " => unite {{{
         let g:unite_source_history_yank_enable=1
         let g:unite_source_file_mru_long_limit = 100
         nnoremap <leader>s :Unite -start-insert buffer file_mru<CR>
     " }}}
+    if has('nvim')
     " => deoplete {{{
         let g:deoplete#enable_at_startup = 1
         let g:deoplete#disable_auto_complete = 1
@@ -569,8 +603,21 @@ endif
         " inoremap <silent><expr><C-l> deoplete#mappings#manual_complete()
         " inoremap <silent><expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
         inoremap <silent><expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
-
+        autocmd CompleteDone * pclose!
     " }}}
+    " => neomake {{{
+        let g:neomake_python_enable_makers = ['flake8']
+        let g:neomake_python_flake8_exe = substitute(g:python_host_prog, 'python$', '', '') . 'flake8'
+        autocmd QuickFixCmdPost l* nested lwindow
+        autocmd! BufWritePost *.py Neomake flake8
+        " autocmd! BufWritePost *.py lwindow
+
+        " let g:neomake_python_flake8_maker = {
+        "         \ 'exe': '/home/dersu/.config/nvim/env2/bin/flake8',
+        "         \ 'errorformat': '%A%f: line %l\, col %v\, %m \ (%t%*\d\)',
+        "         \ }
+        " }}}
+    endif
     " => UltiSnip {{{
         let g:UltiSnipsExpandTrigger="<c-j>"
 
@@ -584,8 +631,8 @@ endif
         " let g:UltiSnipsJumpForwardTrigger="<tab>"
         " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
     " }}}
-    " => Rainbow {{{
-        let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
+    " => RainbowParentheses {{{
+        autocmd VimEnter *.py RainbowParentheses
     " }}}
     " => TagBar {{{
         nnoremap <silent> <leader>tt :TagbarToggle<CR>
@@ -648,8 +695,73 @@ endif
         let NERDTreeKeepTreeInNewTab=1
         let g:nerdtree_tabs_open_on_gui_startup=0
     " }}}
-"}}}
-" Functions {{{
+    " => YouCompleteMe {{{
+        if has('gui_running')
+            " let g:ycm_server_python_interpreter = '/usr/bin/python'
+            nnoremap <leader>jd :YcmCompleter GoTo<CR>
+
+            let g:acp_enableAtStartup = 0
+
+            " enable completion from tags
+            let g:ycm_collect_identifiers_from_tags_files = 1
+
+            " remap Ultisnips for compatibility for YCM
+            let g:UltiSnipsExpandTrigger = '<C-j>'
+            let g:UltiSnipsJumpForwardTrigger = '<C-j>'
+            let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
+
+            " Enable omni completion.
+            autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+            autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+            autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+            autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+            autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+            autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+            autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
+            " Haskell post write lint and check with ghcmod
+            " $ `cabal install ghcmod` if missing and ensure
+            " ~/.cabal/bin is in your $PATH.
+            if !executable("ghcmod")
+                autocmd BufWritePost *.hs GhcModCheckAndLintAsync
+            endif
+
+            " For snippet_complete marker.
+            if has('conceal')
+                set conceallevel=2 concealcursor=i
+            endif
+
+            " Disable the neosnippet preview candidate window
+            " When enabled, there can be too much visual noise
+            " especially when splits are used.
+            set completeopt-=preview
+        endif
+    " }}}
+    " => syntastic {{{
+        " autocmd QuickFixCmdPost l* nested lwindow
+        " autocmd! BufWritePost *.py SyntasticCheck
+        " let g:syntastic_quiet_messages={'level':'warnings'}
+        let g:syntastic_python_checkers=['flake8']
+        let g:syntastic_python_flake8_exec="/usr/local/bin/flake8"
+        " let g:syntastic_python_flack8_quiet_messages = {
+        "     \ "type":  "error",
+        "     \ "regex": 'E202' }
+        let g:syntastic_shell = "/bin/sh"
+        let g:syntastic_always_populate_loc_list = 0
+        " let g:syntastic_auto_loc_list = 1
+        let g:syntastic_check_on_open = 1
+        let g:syntastic_check_on_wq = 1
+    "}}}
+    " => vim-go {{{
+    " let g:go_bin_path = "~/bin/go/bin"
+    "}}}
+   
+    " Functions {{{
+    function SwitchBuffer()
+      b#
+    endfunction
+    " nmap <leader>bn :call SwitchBuffer()<CR>
+    nmap <C-_> :call SwitchBuffer()<CR>
 
     " Initialize NERDTree as needed {
     function! NERDTreeInitAsNeeded()
@@ -701,19 +813,18 @@ endif
     " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
 " }}}
 " my self-system {{{
-    command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
-    command! -nargs=1 DlogFrameDate :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate "<args>"
+    " if OSX()
+    "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -v-1d "+\%Y-\%m-\%d"`
+    " else
+    "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
+    " endif
+    command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
+    command! -nargs=1 DlogFrameDate :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/timecamp.py -e --startdate "<args>"
+
     " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
 " }}}
 
 " offlines {{{
-" " => syntastic
-" let g:syntastic_python_checkers=['flake8']
-" set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineFlag()}
-" set statusline+=%*
-" " let g:syntastic_quiet_warnings=1
-" let g:syntastic_quiet_messages={'level':'warnings'}
 
 
 
@@ -858,47 +969,6 @@ endif
     "     endif
     " " }
 
-    " " YouCompleteMe {
-    "     if count(g:spf13_bundle_groups, 'youcompleteme')
-    "         let g:acp_enableAtStartup = 0
-
-    "         " enable completion from tags
-    "         let g:ycm_collect_identifiers_from_tags_files = 1
-
-    "         " remap Ultisnips for compatibility for YCM
-    "         let g:UltiSnipsExpandTrigger = '<C-j>'
-    "         let g:UltiSnipsJumpForwardTrigger = '<C-j>'
-    "         let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
-
-    "         " Enable omni completion.
-    "         autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    "         autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    "         autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    "         autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    "         autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    "         autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-    "         autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
-
-    "         " Haskell post write lint and check with ghcmod
-    "         " $ `cabal install ghcmod` if missing and ensure
-    "         " ~/.cabal/bin is in your $PATH.
-    "         if !executable("ghcmod")
-    "             autocmd BufWritePost *.hs GhcModCheckAndLintAsync
-    "         endif
-
-    "         " For snippet_complete marker.
-    "         if !exists("g:spf13_no_conceal")
-    "             if has('conceal')
-    "                 set conceallevel=2 concealcursor=i
-    "             endif
-    "         endif
-
-    "         " Disable the neosnippet preview candidate window
-    "         " When enabled, there can be too much visual noise
-    "         " especially when splits are used.
-    "         set completeopt-=preview
-    "     endif
-    " " }
 
     " " neocomplete {
     "     if count(g:spf13_bundle_groups, 'neocomplete')
