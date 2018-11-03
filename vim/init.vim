@@ -8,7 +8,6 @@ if has('nvim')
     let g:python3_host_prog = $HOME . '/.config/nvim/env3/bin/python'
 endif
 
-
 " Environment {{{
     " Identify platform {
         silent function! OSX()
@@ -560,7 +559,7 @@ endif
     else
         Plug 'https://github.com/Valloric/YouCompleteMe'
         Plug 'https://github.com/scrooloose/syntastic'
-        Plug 'https://github.com/fatih/vim-go'
+        " Plug 'https://github.com/fatih/vim-go'
     endif
     Plug 'KabbAmine/zeavim.vim'
     Plug 'gorodinskiy/vim-coloresque'

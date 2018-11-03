@@ -1,5 +1,5 @@
-# source /usr/share/fish/config.fish
-source /usr/local/etc/fish/config.fish
+#source /usr/local/etc/fish/config.fish
+#source /usr/share/fish/config.fish
 
 set -x EDITOR mvim
 set -x LC_TIME 'en_US.UTF-8'
@@ -84,13 +84,26 @@ function mosht
     # /usr/local/bin/mosh --ssh="ssh -i ~/.ssh/id_rsa -p 7722" zibu@104.128.69.20
 end
 
+switch (uname)
+    case Linux
+        set --local manpath_list ~/bin $JAVA_HOME/bin $PATH 
+    case Darwin
+        set -gx JAVA_HOME /Library/Java/JavaVirtualMachines/jdk/Contents/Home
+        # set -gx JAVAFX_HOME /Library/Java/JavaVirtualMachines/javafx
+        # set -gx JAVAFX_LIB $JAVAFX_HOME/lib
+        set -gx CLASSPATH $JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
 
-set -gx JAVA_HOME /Library/Java/JavaVirtualMachines/jdk/Contents/Home
-# set -gx JAVAFX_HOME /Library/Java/JavaVirtualMachines/javafx
-# set -gx JAVAFX_LIB $JAVAFX_HOME/lib
-set -gx CLASSPATH $JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
+        set --local manpath_list ~/bin /usr/local/opt/coreutils/libexec/gnubin /usr/local/opt/openssl@1.1/bin /usr/local/opt/sqlite/bin /usr/local/opt/sphinx-doc/bin /usr/local/bin/ /usr/local/opt/mysql@5.7/bin $JAVA_HOME/bin $PATH 
 
-set --local manpath_list ~/bin /usr/local/opt/coreutils/libexec/gnubin /usr/local/opt/openssl@1.1/bin /usr/local/opt/sqlite/bin /usr/local/opt/sphinx-doc/bin /usr/local/bin/ /usr/local/opt/mysql@5.7/bin $JAVA_HOME/bin $PATH 
+        set -gx PATH $manpath_sorted
+        set -gx MANPATH /usr/local/opt/coreutils/libexec/gnuman $MANPATH
+
+        test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+    case FreeBSD NetBSD DragonFly
+        echo Hi Beastie!
+    case '*'
+        echo Hi, stranger!
+end
 
 # remove duplicates from the list
 set --local manpath_sorted
@@ -99,9 +112,6 @@ for i in $manpath_list
         set manpath_sorted $manpath_sorted $i
     end
 end
-
-set -gx PATH $manpath_sorted
-set -gx MANPATH /usr/local/opt/coreutils/libexec/gnuman $MANPATH
 
 #set -g fish_user_paths "/usr/local/opt/node@6/bin" $fish_user_paths
 #set -x LDFLAGS  -L/usr/local/opt/node@6/lib
@@ -152,6 +162,4 @@ function fish_prompt
         printf '%s ' (__fish_git_prompt)
         set_color normal
 end
-
-test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
 
