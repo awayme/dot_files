@@ -155,8 +155,6 @@ install_widgets() {
     mkdir -p ~/.config/vimfiles/persistence
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-    curl -L https://get.oh-my.fish | fish
 }
 
 change_sh() {
@@ -193,5 +191,7 @@ create_symlinks     "$APP_PATH" \
                     "$HOME"
 
 msg "omf install fasd"
-msg "vim: Plug install"
+msg "vim: Plug install and compile youcompleteme"
 msg             "\nThanks for installing $app_name."
+
+curl -L https://get.oh-my.fish | fish
