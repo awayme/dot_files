@@ -131,7 +131,7 @@ install_widgets() {
     sudo add-apt-repository ppa:x4121/ripgrep -y
     
     sudo apt-get update
-    sudo apt-get install vim fish fasd ripgrep -y
+    sudo apt-get install vim fish fasd ripgrep highlight atool bsdtar mediainfo odt2txt -y
 
     fd_deb="fd_7.2.0_amd64.deb"
     wget "https://github.com/sharkdp/fd/releases/download/v7.2.0/$fd_deb"
@@ -192,6 +192,9 @@ create_symlinks     "$APP_PATH" \
 
 msg "omf install fasd"
 msg "vim: Plug install and compile youcompleteme"
+msy ".config/vimfiles/plugins/YouCompleteMe/install.py"
 msg             "\nThanks for installing $app_name."
 
 curl -L https://get.oh-my.fish | fish
+
+# pdftotext mutool

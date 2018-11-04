@@ -2,6 +2,7 @@
 #source /usr/share/fish/config.fish
 
 set -x EDITOR mvim
+set -x LANG 'en_US.UTF-8'
 set -x LC_TIME 'en_US.UTF-8'
 set -x LC_CTYPE 'en_US.UTF-8'
 
