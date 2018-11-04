@@ -126,16 +126,17 @@ create_symlinks() {
 }
 
 install_widgets() {
-    sudo apt-add-repository ppa:fish-shell/release-2
-    sudo add-apt-repository ppa:aacebedo/fasd
-    sudo add-apt-repository ppa:x4121/ripgrep
+    sudo apt-add-repository ppa:fish-shell/release-2 -y
+    sudo add-apt-repository ppa:aacebedo/fasd -y
+    sudo add-apt-repository ppa:x4121/ripgrep -y
     
     sudo apt-get update
-    sudo apt-get install vim fish fasd ripgrep 
+    sudo apt-get install vim fish fasd ripgrep -y
 
-    wget https://github.com/sharkdp/fd/releases/download/v7.2.0/fd_7.2.0_amd64.deb
-    sudo dpkg -i fd_7.2.0_amd64.deb
-    rm fd_7.2.0_i386.deb
+    fd_deb="fd_7.2.0_amd64.deb"
+    wget "https://github.com/sharkdp/fd/releases/download/v7.2.0/$fd_deb"
+    sudo dpkg -i $fd_deb
+    rm $fd_deb
     
     sync_repo           "$HOME/bin/ranger" \
                         "$RANGER_URI" \
@@ -149,16 +150,13 @@ install_widgets() {
                         "https://github.com/junegunn/fzf.git" \
                         "master" \
                         "fzf"
-    cd ~/.fzf
-    ./install
+    ~/.fzf/install
 
     mkdir -p ~/.config/vimfiles/persistence
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-    curl -L https://get.oh-my.fish > install
-    fish install 
-    rm install 
+    curl -L https://get.oh-my.fish | fish
 }
 
 change_sh() {
