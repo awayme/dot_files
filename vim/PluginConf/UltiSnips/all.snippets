@@ -40,7 +40,6 @@ endglobal
 snippet dlog "daily log" b
 `!p snip.rv = newsoa(0)` {{{
 ${0}
-在他人视角考虑问题 
 }}}}}}}}}}}}}}}}}}}}}}}}}}
 endsnippet
 
@@ -86,29 +85,8 @@ today's most important tasks
 ==========================
 endsnippet
 
-snippet blog "blog" b
-Title: 
-Date: `!p snip.rv = time_stamp_iso()`
-Category: 
-Tags: 
-
-endsnippet
-
-
 snippet now "Now" b
 `!p snip.rv = time_stamp_iso()`
-endsnippet
-
-snippet shell "scrapy" b
-from scrapy.shell import inspect_response
-# from scrapy.utils.response import open_in_browser
-inspect_response(response, self)
-endsnippet
-
-snippet opdb "openinbrowser" b
-from scrapy.utils.response import open_in_browser
-import pdb; pdb.set_trace()
-open_in_browser(response)
 endsnippet
 
 snippet dreminder "debugflag" b
@@ -118,4 +96,8 @@ endsnippet
 snippet strftime "import now and format" b
 from datetime import datetime
 datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+endsnippet
+
+snippet exit "force exit" b
+import os; os._exit(1)
 endsnippet
