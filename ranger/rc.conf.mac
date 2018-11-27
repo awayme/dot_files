@@ -751,7 +751,8 @@ copytmap <ESC> q Q w <C-c>
 
 map xt shell ~/bin/open_iterm_window.sh %d
 map xc console shell atool -a "`basename "$PWD"`".zip %%s
-map xm shell open -a meld --args %d/%f
+# map xm shell open -a meld --args %d/%f
+map xm shell open -a meld --args %p
 #map \t shell xfce4-terminal --working-directory=%d
 
 # default_linemode devicons

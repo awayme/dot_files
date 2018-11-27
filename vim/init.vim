@@ -57,10 +57,12 @@ EOF
     endfunction
     " Load up a 'stable' virtualenv if one exists in ~/.virtualenv
     " let defaultvirtualenv = $HOME . "/.virtualenvs/stable"
-    let defaultvirtualenv = $HOME . "/bin/activitywatch/env"
+    let defaultvirtualenv = $HOME . "/Data/Personal-project/Self-productive/env/"
 
     " Only attempt to load this virtualenv if the defaultvirtualenv
     " actually exists, and we aren't running with a virtualenv active.
+    "
+    " echo "Warning: " . getftype(defaultvirtualenv)
     if has("python")
         if empty($VIRTUAL_ENV) && getftype(defaultvirtualenv) == "dir"
             call LoadVirtualEnv(defaultvirtualenv)
@@ -513,7 +515,7 @@ endif
     Plug 'https://github.com/junegunn/vim-plug'
 
     " self system
-    " Plug 'https://github.com/ActivityWatch/aw-watcher-vim'
+    Plug 'https://github.com/ActivityWatch/aw-watcher-vim'
 
     " GUI
     if has('nvim')
@@ -818,8 +820,9 @@ endif
     " else
     "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
     " endif
-    command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
-    command! -nargs=1 DlogFrameDate :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/timecamp.py -e --startdate "<args>"
+    " command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start `date -d yesterday +\%Y-\%m-\%d` --end `date -d yesterday +\%Y-\%m-\%d`
+    command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc --days 1 --end 1
+    " command! -nargs=1 DlogFrameDate :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start "<args>" --end "<args>"
 
     " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
 " }}}
