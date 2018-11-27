@@ -61,7 +61,6 @@ end
 #     ve
 #     cd scripts
 # end
-
 function anaconda
     # set -gx PATH /opt/anaconda2/bin $PATH 
     # set -gx PATH /usr/local/opt/anaconda2/bin/ $PATH
@@ -88,7 +87,18 @@ end
 switch (uname)
     case Linux
         set --local manpath_list ~/bin $JAVA_HOME/bin $PATH 
+        set --local manpath_sorted
+        for i in $manpath_list
+            if not contains $i $manpath_sorted
+                set manpath_sorted $manpath_sorted $i
+            end
+        end
+        set -gx PATH $manpath_sorted
     case Darwin
+        function tcf
+            tct (tc tc list --flat | fzf)
+        end
+
         set -gx JAVA_HOME /Library/Java/JavaVirtualMachines/jdk/Contents/Home
         # set -gx JAVAFX_HOME /Library/Java/JavaVirtualMachines/javafx
         # set -gx JAVAFX_LIB $JAVAFX_HOME/lib
@@ -102,6 +112,7 @@ switch (uname)
             end
         end
         set -gx PATH $manpath_sorted
+
         set -gx MANPATH /usr/local/opt/coreutils/libexec/gnuman $MANPATH
 
         test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
