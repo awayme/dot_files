@@ -116,6 +116,8 @@ switch (uname)
         set -gx MANPATH /usr/local/opt/coreutils/libexec/gnuman $MANPATH
 
         test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+
+        status --is-interactive; and source (pyenv init -|psub)
     case FreeBSD NetBSD DragonFly
         echo Hi Beastie!
     case '*'

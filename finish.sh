@@ -171,21 +171,15 @@ change_sh() {
 }
 ############################ MAIN()
 variable_set "$HOME"
-program_must_exist "vim"
-program_must_exist "git"
 
-#do_backup           "$HOME/.vim" \
-#                    "$HOME/.vimrc" \
-#                    "$HOME/.tmux.conf"\
-#                    "$HOME/.zshrc"
+change_sh
 
-sync_repo           "$APP_PATH" \
-                    "$REPO_URI" \
-                    "$REPO_BRANCH" \
-                    "$app_name"
+create_symlinks     "$APP_PATH" \
+                    "$HOME"
+
+msg "vim: Plug install and compile youcompleteme"
+msg ".config/vimfiles/plugins/YouCompleteMe/install.py"
+msg             "\nThanks for installing $app_name."
 
 
-install_widgets
-
-msg "curl -L https://get.oh-my.fish | fish"
-msg "omf install fasd"
+# pdftotext mutool
