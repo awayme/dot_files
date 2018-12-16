@@ -531,7 +531,6 @@ endif
     " " Edit
     Plug 'https://github.com/wsdjeg/vim-mundo.git', { 'on':  'MundoToggle' }
     Plug 'scrooloose/nerdtree'
-    Plug 'https://github.com/lilydjwg/fcitx.vim'
     Plug 'https://github.com/kshenoy/vim-signature'
     Plug 'https://github.com/junegunn/rainbow_parentheses.vim'
     Plug 'https://github.com/Shougo/unite.vim'
