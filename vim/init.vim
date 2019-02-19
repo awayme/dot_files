@@ -8,6 +8,8 @@ if has('nvim')
     let g:python3_host_prog = $HOME . '/.config/nvim/env3/bin/python'
 endif
 
+let python_virtualenv = $HOME . "/bin/env/"
+
 " Environment {{{
     " Identify platform {
         silent function! OSX()
@@ -45,7 +47,7 @@ endif
     
     " Function to activate a virtualenv in the embedded interpreter for
     " omnicomplete and other things like that.
-    function LoadVirtualEnv(path)
+    function LoadVirtualEnv2(path)
         let activate_this = a:path . '/bin/activate_this.py'
         if getftype(a:path) == "dir" && filereadable(activate_this)
         python << EOF
@@ -55,20 +57,29 @@ execfile(activate_this, dict(__file__=activate_this))
 EOF
         endif
     endfunction
-    " Load up a 'stable' virtualenv if one exists in ~/.virtualenv
-    " let defaultvirtualenv = $HOME . "/.virtualenvs/stable"
-    let defaultvirtualenv = $HOME . "/Data/Personal-project/Self-productive/env/"
 
-    " Only attempt to load this virtualenv if the defaultvirtualenv
-    " actually exists, and we aren't running with a virtualenv active.
-    "
-    " echo "Warning: " . getftype(defaultvirtualenv)
-    if has("python")
-        if empty($VIRTUAL_ENV) && getftype(defaultvirtualenv) == "dir"
-            call LoadVirtualEnv(defaultvirtualenv)
+    function LoadVirtualEnv3(path)
+        let activate_this = a:path . '/bin/activate_this.py'
+        if getftype(a:path) == "dir" && filereadable(activate_this)
+        py3 << EOF
+import vim
+activate_this = vim.eval('l:activate_this')
+exec(compile(open(activate_this, "rb").read(), activate_this, 'exec'), {'__file__': activate_this})
+EOF
+        endif
+    endfunction
+
+    if has("python3")
+        if empty($VIRTUAL_ENV) && getftype(python_virtualenv) == "dir"
+            call LoadVirtualEnv3(python_virtualenv)
+        endif
+    elseif has("python")
+        if empty($VIRTUAL_ENV) && getftype(python_virtualenv) == "dir"
+            call LoadVirtualEnv2(python_virtualenv)
         endif
     endif
 " }}}
+
 " General {{{
     let mapleader = ','
 
@@ -93,7 +104,7 @@ EOF
     " endif
     filetype plugin indent on   " Automatically detect file types.
     syntax on                   " Syntax highlighting
-    set mouse=a                 " Automatically enable mouse usage
+    " set mouse=a                 " Automatically enable mouse usage
     set mousehide               " Hide the mouse cursor while typing
     scriptencoding utf-8
     set fileencodings=utf-8,chinese,GB18030,latin-1
@@ -181,6 +192,7 @@ EOF
     " cm=blowfish2
 
 " }}}
+
 " Vim UI {{{
     set title
     set tabpagemax=15               " Only show 15 tabs
@@ -231,35 +243,36 @@ EOF
     set list
     set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
 
-" * selection
-" + copy-paste
-if has('clipboard')
-    if has('nvim')
-        set clipboard=unnamedplus
-    elseif has('unnamedplus')  " When possible use + register for copy-paste
-        set clipboard=unnamed,unnamedplus
-    else         " On mac and Windows, use * register for copy-paste
-        set clipboard=unnamed
+    " * selection
+    " + copy-paste
+    if has('clipboard')
+        if has('nvim')
+            set clipboard=unnamedplus
+        elseif has('unnamedplus')  " When possible use + register for copy-paste
+            set clipboard=unnamed,unnamedplus
+        else         " On mac and Windows, use * register for copy-paste
+            set clipboard=unnamed
+        endif
     endif
-endif
 
-" Cut: control-X / shift-Delete
-" d
-vnoremap <S-Delete> "+x
-" Copy: control-C / control-Insert
-vnoremap <C-Insert> "+y
-" Paste: control-V / shift-Insert
-nnoremap <S-Insert> "+gP
-inoremap <S-Insert> <C-R><C-O>+
-cnoremap <S-Insert> <C-R>+
+    " Cut: control-X / shift-Delete
+    " d
+    vnoremap <S-Delete> "+x
+    " Copy: control-C / control-Insert
+    vnoremap <C-Insert> "+y
+    " Paste: control-V / shift-Insert
+    nnoremap <S-Insert> "+gP
+    inoremap <S-Insert> <C-R><C-O>+
+    cnoremap <S-Insert> <C-R>+
 
-if has('nvim')
-    vmap <LeftRelease> "*ygv
-endif
+    if has('nvim')
+        vmap <LeftRelease> "*ygv
+    endif
 
-" autocmd VimLeave * call system("xsel -ib", getreg('+'))
-" autocmd VimLeave * call system("xsel -ip", getreg('*'))
+    " autocmd VimLeave * call system("xsel -ib", getreg('+'))
+    " autocmd VimLeave * call system("xsel -ip", getreg('*'))
 " }}}
+
 " GUI Settings {{{
 
     " GVIM- (here instead of .gvimrc)
@@ -280,6 +293,7 @@ endif
         "set term=builtin_ansi       " Make arrow and other keys work
     endif
 " }}}
+
 " Formatting {{{
     set linebreak
     " set nowrap                      " Do not wrap long lines
@@ -308,6 +322,7 @@ endif
 
     set commentstring="# %s"
 " }}}
+
 " Key (re)Mappings {{{
     " Easier moving in tabs and windows
     " The lines conflict with the default digraph mapping of <C-K>
@@ -508,14 +523,17 @@ endif
 
     " map <leader>gp :vimgrep // **/*.<left><left><left><left><left><left><left>
     autocmd FileType python nnoremap <leader>y :0,$!yapf<Cr>
+
+    nnoremap <Leader>b :ls<CR>:b<Space>
 " }}}
+
 " Plugins {{{
     call plug#begin(plugin_manager_path)
 
     Plug 'https://github.com/junegunn/vim-plug'
 
     " self system
-    Plug 'https://github.com/ActivityWatch/aw-watcher-vim'
+    " Plug 'https://github.com/ActivityWatch/aw-watcher-vim'
 
     " GUI
     if has('nvim')
@@ -524,7 +542,7 @@ endif
     endif
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
-    " Plug 'bling/vim-bufferline'
+    Plug 'bling/vim-bufferline'
     Plug 'altercation/vim-colors-solarized'
     Plug 'Konfekt/FastFold'
 
@@ -536,9 +554,7 @@ endif
     Plug 'https://github.com/Shougo/unite.vim'
     " Plug 'https://github.com/Shougo/denite.nvim.git'
     Plug 'https://github.com/Shougo/neomru.vim'
-    " Plug 'https://github.com/dhruvasagar/vim-table-mode.git'
     Plug 'https://github.com/mhinz/vim-grepper.git'
-    " Plug 'https://github.com/airodactyl/neovim-ranger.git'
     Plug 'https://github.com/Yggdroot/indentLine'
     Plug 'terryma/vim-multiple-cursors'
     Plug 'easymotion/vim-easymotion'
@@ -547,6 +563,7 @@ endif
     Plug 'mhinz/vim-signify'
     Plug 'osyo-manga/vim-over'
     Plug 'https://github.com/reedes/vim-litecorrect.git'
+    Plug 'https://github.com/elzr/vim-json'
 
     " Developement
     if has('nvim')
@@ -558,29 +575,24 @@ endif
         Plug 'zchee/deoplete-jedi'
         Plug 'https://github.com/python-rope/ropevim'
     else
-        Plug 'https://github.com/Valloric/YouCompleteMe'
+        " Plug 'https://github.com/Valloric/YouCompleteMe'
         Plug 'https://github.com/scrooloose/syntastic'
-        " Plug 'https://github.com/fatih/vim-go'
     endif
     Plug 'KabbAmine/zeavim.vim'
     Plug 'gorodinskiy/vim-coloresque'
     Plug 'hail2u/vim-css3-syntax'
     Plug 'tpope/vim-commentary'
-    Plug 'https://github.com/tpope/vim-fugitive.git'
     Plug 'https://github.com/majutsushi/tagbar'
     Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
     Plug 'https://github.com/heracek/HTML-AutoCloseTag'
 
     " file type
     Plug 'https://github.com/dag/vim-fish.git'
-    " Plug 'tpope/vim-markdown'
 
-    "Plug 'klen/python-mode'
-    " NeoBundle 'https://github.com/Chiel92/vim-autoformat'
-    
     " Add plugins to &runtimepath
     call plug#end()
 " }}}
+
 " Plugin settings {{{
     " => scheme {{{
         if has('nvim')
@@ -620,17 +632,19 @@ endif
         " }}}
     endif
     " => UltiSnip {{{
-        let g:UltiSnipsExpandTrigger="<c-j>"
-
         if exists('g:UltiSnipsMinePath')
             let &runtimepath.= ','.g:UltiSnipsMinePath
         endif
         " autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
-        
+
         " " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
         " let g:UltiSnipsExpandTrigger="<tab>"
         " let g:UltiSnipsJumpForwardTrigger="<tab>"
         " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+        let g:UltiSnipsExpandTrigger = '<C-j>'
+        let g:UltiSnipsJumpForwardTrigger = '<C-j>'
+        let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
     " }}}
     " => RainbowParentheses {{{
         autocmd VimEnter *.py RainbowParentheses
@@ -706,11 +720,6 @@ endif
             " enable completion from tags
             let g:ycm_collect_identifiers_from_tags_files = 1
 
-            " remap Ultisnips for compatibility for YCM
-            let g:UltiSnipsExpandTrigger = '<C-j>'
-            let g:UltiSnipsJumpForwardTrigger = '<C-j>'
-            let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
-
             " Enable omni completion.
             autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
             autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
@@ -753,10 +762,11 @@ endif
         let g:syntastic_check_on_open = 1
         let g:syntastic_check_on_wq = 1
     "}}}
-    " => vim-go {{{
-    " let g:go_bin_path = "~/bin/go/bin"
+    " => vim-json {{{
+    " Concealing issue
+    let g:indentLine_concealcursor=""
     "}}}
-   
+    "
     " Functions {{{
     function SwitchBuffer()
       b#
@@ -820,7 +830,7 @@ endif
     "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
     " endif
     " command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start `date -d yesterday +\%Y-\%m-\%d` --end `date -d yesterday +\%Y-\%m-\%d`
-    command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc --days 1 --end 1
+    command! DlogFrame :r !~/bin/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc --days 1 --end 1
     " command! -nargs=1 DlogFrameDate :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start "<args>" --end "<args>"
 
     " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
