@@ -69,8 +69,10 @@ ext 7z|ace|ar|arc|bz2?|cab|cpio|cpt|deb|dgc|gz,  has aunpack     = aunpack -- "$
 ext iso|jar|msi|pkg|rar|shar|tar|tgz|xar|xpi|xz|zip, has aunpack = aunpack -- "$@"
 ext rar|zip|,                                                    = open -a 'simple comic' --args "$@"
 directory,                                                       = open -a 'simple comic' --args "$@"
+directory,                                                       = open -a 'EdgeView 2.app' "$@"
 
-mime ^image, flag f                                              = open -a xee.app "$@"
+mime ^image, flag f                                              = open -a Xee³.app "$@"
+mime ^image, flag f                                              = open -a 'EdgeView 2.app' "$@"
 
 file, flag f                                                     = open "$@"
 directory, flag f                                                = open "$@"
