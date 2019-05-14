@@ -1,5 +1,5 @@
 global !p
-def newsoa(delta=1):
+def diary_frame(delta=1):
     #import datetime
     from datetime import date, timedelta
     #da = datetime.datetime.now()
@@ -25,7 +25,7 @@ def time_stamp_iso():
 endglobal
 
 # snippet dlog "daily log" b
-# `!p snip.rv = newsoa(0)` {{{
+# `!p snip.rv = diary_frame(0)` {{{
 # ${0}
 # }}}}}}}}}}}}}}}}}}}}}}}}}}
 # conflict/difficulty
@@ -37,14 +37,15 @@ endglobal
 # ==========================
 # endsnippet
 
+
 snippet dlog "daily log" b
-`!p snip.rv = newsoa(0)` {{{
+`!p snip.rv = diary_frame(0)` {{{
 ${0}
 }}}}}}}}}}}}}}}}}}}}}}}}}}
 endsnippet
 
 snippet dlog1 "daily log" b
-`!p snip.rv = newsoa(1)` {{{
+`!p snip.rv = diary_frame(1)` {{{
 mood:
 health:
 what made me happy:
@@ -53,7 +54,7 @@ ${0}
 endsnippet
 
 snippet dlog2 "daily log" b
-`!p snip.rv = newsoa(2)` {{{
+`!p snip.rv = diary_frame(2)` {{{
 mood:
 health:
 what made me happy:
@@ -62,7 +63,7 @@ ${0}
 endsnippet
 
 snippet dlog3 "daily log" b
-`!p snip.rv = newsoa(3)` {{{
+`!p snip.rv = diary_frame(3)` {{{
 mood:
 health:
 what made me happy:
@@ -74,7 +75,7 @@ today's most important tasks
 endsnippet
 
 snippet dlog4 "daily log" b
-`!p snip.rv = newsoa(4)` {{{
+`!p snip.rv = diary_frame(4)` {{{
 ${0}
 mood:
 health:

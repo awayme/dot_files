@@ -1,6 +1,6 @@
 let g:consolidated_directory = $HOME . '/.config/vimfiles/persistence/'
 
-let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
+" let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
 
 let plugin_manager_path = $HOME . '/.config/vimfiles/plugins/'
 if has('nvim')
@@ -8,7 +8,8 @@ if has('nvim')
     let g:python3_host_prog = $HOME . '/.config/nvim/env3/bin/python'
 endif
 
-let python_virtualenv = $HOME . "/bin/env/"
+" let python_virtualenv = $HOME . "/bin/env/"
+let python_virtualenv = $HOME . '/.config/nvim/env3/'
 
 " Environment {{{
     " Identify platform {
@@ -69,15 +70,15 @@ EOF
         endif
     endfunction
 
-    if has("python3")
-        if empty($VIRTUAL_ENV) && getftype(python_virtualenv) == "dir"
-            call LoadVirtualEnv3(python_virtualenv)
-        endif
-    elseif has("python")
-        if empty($VIRTUAL_ENV) && getftype(python_virtualenv) == "dir"
-            call LoadVirtualEnv2(python_virtualenv)
-        endif
-    endif
+    " if has("python3")
+    "     if empty($VIRTUAL_ENV) && getftype(python_virtualenv) == "dir"
+    "         call LoadVirtualEnv3(python_virtualenv)
+    "     endif
+    " elseif has("python")
+    "     if empty($VIRTUAL_ENV) && getftype(python_virtualenv) == "dir"
+    "         call LoadVirtualEnv2(python_virtualenv)
+    "     endif
+    " endif
 " }}}
 
 " General {{{
@@ -85,17 +86,17 @@ EOF
 
     set background=dark         " Assume a dark background
 
-    " Allow to trigger background
-    function! ToggleBG()
-        let s:tbg = &background
-        " Inversion
-        if s:tbg == "dark"
-            set background=light
-        else
-            set background=dark
-        endif
-    endfunction
-    noremap <leader>bg :call ToggleBG()<CR>
+    " " Allow to trigger background
+    " function! ToggleBG()
+    "     let s:tbg = &background
+    "     " Inversion
+    "     if s:tbg == "dark"
+    "         set background=light
+    "     else
+    "         set background=dark
+    "     endif
+    " endfunction
+    " noremap <leader>bg :call ToggleBG()<CR>
 
     set foldmethod=marker
     set nospell
@@ -116,10 +117,17 @@ EOF
     autocmd BufEnter * if bufname("") !~ "^\[A-Za-z0-9\]*://" | lcd %:p:h | endif
 
     " set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
+    " don't give |ins-completion-menu| messages.
+    set shortmess+=c
     set viewoptions=folds,options,cursor,unix,slash " Better Unix / Windows compatibility
     " set virtualedit=onemore             " Allow for cursor beyond last character
     set history=1000                    " Store a ton of history (default is 20)
-    exec "set viminfo+=n" . g:consolidated_directory . "viminfo"
+    if has('nvim')
+        exec "set shada+=n" . g:consolidated_directory . "main.shada"
+    else
+        exec "set viminfo+=n" . g:consolidated_directory . "viminfo"
+    endif
+
     " set spell                           " Spell checking on
     set hidden                          " Allow buffer switching without saving
     " set iskeyword-=.                    " '.' is an end of word designator
@@ -197,8 +205,10 @@ EOF
     set title
     set tabpagemax=15               " Only show 15 tabs
     set showmode                    " Display the current mode
+    set cmdheight=2
 
     set cursorline                  " Highlight current line
+    set signcolumn=yes              " always show signcolumns
     highlight clear SignColumn      " SignColumn should match background
     highlight clear LineNr          " Current line number row will have same background color in relative mode
     "highlight clear CursorLineNr    " Remove highlight color from current line number
@@ -271,9 +281,6 @@ EOF
 
     " autocmd VimLeave * call system("xsel -ib", getreg('+'))
     " autocmd VimLeave * call system("xsel -ip", getreg('*'))
-" }}}
-
-" GUI Settings {{{
 
     " GVIM- (here instead of .gvimrc)
     if has('gui_running')
@@ -532,59 +539,39 @@ EOF
 
     Plug 'https://github.com/junegunn/vim-plug'
 
-    " self system
-    " Plug 'https://github.com/ActivityWatch/aw-watcher-vim'
-
-    " GUI
-    if has('nvim')
-        Plug 'https://github.com/equalsraf/neovim-gui-shim.git'
-        Plug 'https://github.com/freeo/vim-kalisi'
-    endif
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
     Plug 'bling/vim-bufferline'
-    Plug 'altercation/vim-colors-solarized'
-    Plug 'Konfekt/FastFold'
+    Plug 'iCyMind/NeoSolarized'
+    " Plug 'Konfekt/FastFold'
 
     " " Edit
     Plug 'https://github.com/wsdjeg/vim-mundo.git', { 'on':  'MundoToggle' }
     Plug 'scrooloose/nerdtree'
-    Plug 'https://github.com/kshenoy/vim-signature'
+    Plug 'https://github.com/kshenoy/vim-signature'  "Plugin to toggle, display and navigate marks
     Plug 'https://github.com/junegunn/rainbow_parentheses.vim'
-    Plug 'https://github.com/Shougo/unite.vim'
-    " Plug 'https://github.com/Shougo/denite.nvim.git'
-    Plug 'https://github.com/Shougo/neomru.vim'
+    " Plug 'https://github.com/Shougo/unite.vim'
+    " Plug 'https://github.com/Shougo/neomru.vim'
     Plug 'https://github.com/mhinz/vim-grepper.git'
     Plug 'https://github.com/Yggdroot/indentLine'
     Plug 'terryma/vim-multiple-cursors'
     Plug 'easymotion/vim-easymotion'
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-surround'
-    Plug 'mhinz/vim-signify'
-    Plug 'osyo-manga/vim-over'
-    Plug 'https://github.com/reedes/vim-litecorrect.git'
+    Plug 'mhinz/vim-signify' "Signify (or just Sy) uses the sign column to indicate added, modified and removed lines in a file that is managed by a version control system (VCS).
     Plug 'https://github.com/elzr/vim-json'
 
     " Developement
-    if has('nvim')
-        Plug 'https://github.com/benekastah/neomake.git'
-        Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
-        function! DoRemote(arg)
-          UpdateRemotePlugins
-        endfunction
-        Plug 'zchee/deoplete-jedi'
-        Plug 'https://github.com/python-rope/ropevim'
-    else
-        " Plug 'https://github.com/Valloric/YouCompleteMe'
-        Plug 'https://github.com/scrooloose/syntastic'
-    endif
-    Plug 'KabbAmine/zeavim.vim'
-    Plug 'gorodinskiy/vim-coloresque'
-    Plug 'hail2u/vim-css3-syntax'
+    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+    " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    " Plug 'deoplete-plugins/deoplete-jedi'
+    Plug 'honza/vim-snippets'
+    Plug 'gorodinskiy/vim-coloresque'  "color preview for vim.
+    Plug 'mattn/emmet-vim' "support for expanding abbreviations similar to emmet
+
+    " Plug 'hail2u/vim-css3-syntax'
     Plug 'tpope/vim-commentary'
     Plug 'https://github.com/majutsushi/tagbar'
-    Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-    Plug 'https://github.com/heracek/HTML-AutoCloseTag'
 
     " file type
     Plug 'https://github.com/dag/vim-fish.git'
@@ -595,80 +582,146 @@ EOF
 
 " Plugin settings {{{
     " => scheme {{{
-        if has('nvim')
-            colorscheme kalisi
-        else
-            colorscheme solarized
-        endif
-
+      colorscheme NeoSolarized
     " }}}
     " => unite {{{
-        let g:unite_source_history_yank_enable=1
-        let g:unite_source_file_mru_long_limit = 100
-        nnoremap <leader>s :Unite -start-insert buffer file_mru<CR>
+        " let g:unite_source_history_yank_enable=1
+        " let g:unite_source_file_mru_long_limit = 100
+        " nnoremap <leader>s :Unite -start-insert buffer file_mru<CR>
     " }}}
-    if has('nvim')
-    " => deoplete {{{
-        let g:deoplete#enable_at_startup = 1
-        let g:deoplete#disable_auto_complete = 1
-		" inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
-		" inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
-        " inoremap <silent><expr><C-l> deoplete#mappings#manual_complete()
-        " inoremap <silent><expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-        inoremap <silent><expr> <C-n> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
-        autocmd CompleteDone * pclose!
-    " }}}
-    " => neomake {{{
-        let g:neomake_python_enable_makers = ['flake8']
-        let g:neomake_python_flake8_exe = substitute(g:python_host_prog, 'python$', '', '') . 'flake8'
-        autocmd QuickFixCmdPost l* nested lwindow
-        autocmd! BufWritePost *.py Neomake flake8
-        " autocmd! BufWritePost *.py lwindow
+    " => coc {{{
+        " Use tab for trigger completion with characters ahead and navigate.
+        " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+        inoremap <silent><expr> <TAB>
+              \ pumvisible() ? "\<C-n>" :
+              \ <SID>check_back_space() ? "\<TAB>" :
+              \ coc#refresh()
+        inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-        " let g:neomake_python_flake8_maker = {
-        "         \ 'exe': '/home/dersu/.config/nvim/env2/bin/flake8',
-        "         \ 'errorformat': '%A%f: line %l\, col %v\, %m \ (%t%*\d\)',
-        "         \ }
-        " }}}
-    endif
+        function! s:check_back_space() abort
+          let col = col('.') - 1
+          return !col || getline('.')[col - 1]  =~# '\s'
+        endfunction
+
+        " Use <c-space> to trigger completion.
+        " inoremap <silent><expr> <c-space> coc#refresh()
+
+        " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+        " Coc only does snippet and additional edit on confirm.
+        inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+        " Use `[c` and `]c` to navigate diagnostics
+        nmap <silent> [c <Plug>(coc-diagnostic-prev)
+        nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+        " Remap keys for gotos
+        nmap <silent> gd <Plug>(coc-definition)
+        nmap <silent> gy <Plug>(coc-type-definition)
+        nmap <silent> gi <Plug>(coc-implementation)
+        nmap <silent> gr <Plug>(coc-references)
+
+        " Use K to show documentation in preview window
+        nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+        function! s:show_documentation()
+          if (index(['vim','help'], &filetype) >= 0)
+            execute 'h '.expand('<cword>')
+          else
+            call CocAction('doHover')
+          endif
+        endfunction
+
+        " Highlight symbol under cursor on CursorHold
+        autocmd CursorHold * silent call CocActionAsync('highlight')
+
+        " Remap for rename current word
+        nmap <leader>rn <Plug>(coc-rename)
+
+        " Remap for format selected region
+        xmap <leader>f  <Plug>(coc-format-selected)
+        nmap <leader>f  <Plug>(coc-format-selected)
+
+        augroup mygroup
+          autocmd!
+          " Setup formatexpr specified filetype(s).
+          autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+          " Update signature help on jump placeholder
+          autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+        augroup end
+
+        " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+        xmap <leader>a  <Plug>(coc-codeaction-selected)
+        nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+        " Remap for do codeAction of current line
+        nmap <leader>ac  <Plug>(coc-codeaction)
+        " Fix autofix problem of current line
+        nmap <leader>qf  <Plug>(coc-fix-current)
+
+        " Use `:Format` to format current buffer
+        command! -nargs=0 Format :call CocAction('format')
+
+        " Use `:Fold` to fold current buffer
+        command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+
+        " Add diagnostic info for https://github.com/itchyny/lightline.vim
+        let g:lightline = {
+              \ 'colorscheme': 'wombat',
+              \ 'active': {
+              \   'left': [ [ 'mode', 'paste' ],
+              \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+              \ },
+              \ 'component_function': {
+              \   'cocstatus': 'coc#status'
+              \ },
+              \ }
+
+
+
+        " Using CocList
+        " Show all diagnostics
+        nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+        " Manage extensions
+        nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+        " Show commands
+        nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+        " Find symbol of current document
+        nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+        " Search workspace symbols
+        nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+        " Do default action for next item.
+        nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+        " Do default action for previous item.
+        nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+        " Resume latest coc list
+        nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+
+        imap <C-j> <Plug>(coc-snippets-expand)
+
+        nnoremap <leader>s :CocList mru<CR>
+    " }}}
     " => UltiSnip {{{
-        if exists('g:UltiSnipsMinePath')
-            let &runtimepath.= ','.g:UltiSnipsMinePath
-        endif
-        " autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
+        " if exists('g:UltiSnipsMinePath')
+        "     let &runtimepath.= ','.g:UltiSnipsMinePath
+        " endif
+        " " autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
 
-        " " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-        " let g:UltiSnipsExpandTrigger="<tab>"
-        " let g:UltiSnipsJumpForwardTrigger="<tab>"
-        " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+        " " " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+        " " let g:UltiSnipsExpandTrigger="<tab>"
+        " " let g:UltiSnipsJumpForwardTrigger="<tab>"
+        " " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
-        let g:UltiSnipsExpandTrigger = '<C-j>'
-        let g:UltiSnipsJumpForwardTrigger = '<C-j>'
-        let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
+        " let g:UltiSnipsExpandTrigger = '<C-j>'
+        " let g:UltiSnipsJumpForwardTrigger = '<C-j>'
+        " let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
     " }}}
     " => RainbowParentheses {{{
         autocmd VimEnter *.py RainbowParentheses
     " }}}
     " => TagBar {{{
         nnoremap <silent> <leader>tt :TagbarToggle<CR>
-    " }}}
-    " => Fugitive {{{
-        " Instead of reverting the cursor to the last position in the buffer, we
-        " set it to the first line when editing a git commit message
-        au FileType gitcommit au! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
-
-        nnoremap <silent> <leader>gs :Gstatus<CR>
-        nnoremap <silent> <leader>gd :Gdiff<CR>
-        nnoremap <silent> <leader>gc :Gcommit<CR>
-        nnoremap <silent> <leader>gb :Gblame<CR>
-        nnoremap <silent> <leader>gl :Glog<CR>
-        nnoremap <silent> <leader>gp :Git push<CR>
-        nnoremap <silent> <leader>gr :Gread<CR>
-        nnoremap <silent> <leader>gw :Gwrite<CR>
-        nnoremap <silent> <leader>ge :Gedit<CR>
-        " Mnemonic _i_nteractive
-        nnoremap <silent> <leader>gi :Git add -p %<CR>
-        nnoremap <silent> <leader>gg :SignifyToggle<CR>
     " }}}
     " => MUndo {{{
         nnoremap <Leader>u :MundoToggle<CR>
@@ -710,63 +763,27 @@ EOF
         let NERDTreeKeepTreeInNewTab=1
         let g:nerdtree_tabs_open_on_gui_startup=0
     " }}}
-    " => YouCompleteMe {{{
-        if has('gui_running')
-            " let g:ycm_server_python_interpreter = '/usr/bin/python'
-            nnoremap <leader>jd :YcmCompleter GoTo<CR>
-
-            let g:acp_enableAtStartup = 0
-
-            " enable completion from tags
-            let g:ycm_collect_identifiers_from_tags_files = 1
-
-            " Enable omni completion.
-            autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-            autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-            autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-            autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-            autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-            autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-            autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
-
-            " Haskell post write lint and check with ghcmod
-            " $ `cabal install ghcmod` if missing and ensure
-            " ~/.cabal/bin is in your $PATH.
-            if !executable("ghcmod")
-                autocmd BufWritePost *.hs GhcModCheckAndLintAsync
-            endif
-
-            " For snippet_complete marker.
-            if has('conceal')
-                set conceallevel=2 concealcursor=i
-            endif
-
-            " Disable the neosnippet preview candidate window
-            " When enabled, there can be too much visual noise
-            " especially when splits are used.
-            set completeopt-=preview
-        endif
-    " }}}
-    " => syntastic {{{
-        " autocmd QuickFixCmdPost l* nested lwindow
-        " autocmd! BufWritePost *.py SyntasticCheck
-        " let g:syntastic_quiet_messages={'level':'warnings'}
-        let g:syntastic_python_checkers=['flake8']
-        let g:syntastic_python_flake8_exec="/usr/local/bin/flake8"
-        " let g:syntastic_python_flack8_quiet_messages = {
-        "     \ "type":  "error",
-        "     \ "regex": 'E202' }
-        let g:syntastic_shell = "/bin/sh"
-        let g:syntastic_always_populate_loc_list = 0
-        " let g:syntastic_auto_loc_list = 1
-        let g:syntastic_check_on_open = 1
-        let g:syntastic_check_on_wq = 1
-    "}}}
+    "" => syntastic {{{
+    "    " autocmd QuickFixCmdPost l* nested lwindow
+    "    " autocmd! BufWritePost *.py SyntasticCheck
+    "    " let g:syntastic_quiet_messages={'level':'warnings'}
+    "    let g:syntastic_python_checkers=['flake8']
+    "    let g:syntastic_python_flake8_exec="/usr/local/bin/flake8"
+    "    " let g:syntastic_python_flack8_quiet_messages = {
+    "    "     \ "type":  "error",
+    "    "     \ "regex": 'E202' }
+    "    let g:syntastic_shell = "/bin/sh"
+    "    let g:syntastic_always_populate_loc_list = 0
+    "    " let g:syntastic_auto_loc_list = 1
+    "    let g:syntastic_check_on_open = 1
+    "    let g:syntastic_check_on_wq = 1
+    ""}}}
     " => vim-json {{{
     " Concealing issue
     let g:indentLine_concealcursor=""
     "}}}
-    "
+"}}}
+
     " Functions {{{
     function SwitchBuffer()
       b#
@@ -823,6 +840,7 @@ EOF
     command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
     " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
 " }}}
+
 " my self-system {{{
     " if OSX()
     "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -v-1d "+\%Y-\%m-\%d"`
@@ -834,404 +852,4 @@ EOF
     " command! -nargs=1 DlogFrameDate :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start "<args>" --end "<args>"
 
     " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
-" }}}
-
-" offlines {{{
-
-
-
-" " Plugins {
-    " if !exists('g:override_spf13_bundles') && filereadable(expand("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
-    "     let g:solarized_termcolors=256
-    "     let g:solarized_termtrans=1
-    "     let g:solarized_contrast="normal"
-    "     let g:solarized_visibility="normal"
-    "     color solarized             " Load a colorscheme
-    " endif
-
-
-    " " TextObj Sentence {
-    "     if count(g:spf13_bundle_groups, 'writing')
-    "         augroup textobj_sentence
-    "           autocmd!
-    "           autocmd FileType markdown call textobj#sentence#init()
-    "           autocmd FileType textile call textobj#sentence#init()
-    "           autocmd FileType text call textobj#sentence#init()
-    "         augroup END
-    "     endif
-    " " }
-
-    " " TextObj Quote {
-    "     if count(g:spf13_bundle_groups, 'writing')
-    "         augroup textobj_quote
-    "             autocmd!
-    "             autocmd FileType markdown call textobj#quote#init()
-    "             autocmd FileType textile call textobj#quote#init()
-    "             autocmd FileType text call textobj#quote#init({'educate': 0})
-    "         augroup END
-    "     endif
-    " " }
-
-    " " Misc {
-    "     if isdirectory(expand("~/.vim/bundle/matchit.zip"))
-    "         let b:match_ignorecase = 1
-    "     endif
-    " " }
-
-    " " OmniComplete {
-    "     " To disable omni complete, add the following to your .vimrc.before.local file:
-    "     "   let g:spf13_no_omni_complete = 1
-    "     if !exists('g:spf13_no_omni_complete')
-    "         if has("autocmd") && exists("+omnifunc")
-    "             autocmd Filetype *
-    "                 \if &omnifunc == "" |
-    "                 \setlocal omnifunc=syntaxcomplete#Complete |
-    "                 \endif
-    "         endif
-
-    "         hi Pmenu  guifg=#000000 guibg=#F8F8F8 ctermfg=black ctermbg=Lightgray
-    "         hi PmenuSbar  guifg=#8A95A7 guibg=#F8F8F8 gui=NONE ctermfg=darkcyan ctermbg=lightgray cterm=NONE
-    "         hi PmenuThumb  guifg=#F8F8F8 guibg=#8A95A7 gui=NONE ctermfg=lightgray ctermbg=darkcyan cterm=NONE
-
-    "         " Some convenient mappings
-    "         "inoremap <expr> <Esc>      pumvisible() ? "\<C-e>" : "\<Esc>"
-    "         if exists('g:spf13_map_cr_omni_complete')
-    "             inoremap <expr> <CR>     pumvisible() ? "\<C-y>" : "\<CR>"
-    "         endif
-    "         inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
-    "         inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-    "         inoremap <expr> <C-d>      pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
-    "         inoremap <expr> <C-u>      pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<C-u>"
-
-    "         " Automatically open and close the popup menu / preview window
-    "         au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-    "         set completeopt=menu,preview,longest
-    "     endif
-    " " }
-
-    " " Ctags {
-    "     set tags=./tags;/,~/.vimtags
-
-    "     " Make tags placed in .git/tags file available in all levels of a repository
-    "     let gitroot = substitute(system('git rev-parse --show-toplevel'), '[\n\r]', '', 'g')
-    "     if gitroot != ''
-    "         let &tags = &tags . ',' . gitroot . '/.git/tags'
-    "     endif
-    " " }
-
-    " " AutoCloseTag {
-    "     " Make it so AutoCloseTag works for xml and xhtml files as well
-    "     au FileType xhtml,xml ru ftplugin/html/autoclosetag.vim
-    "     nmap <Leader>ac <Plug>ToggleAutoCloseMappings
-    " " }
-
-    " " SnipMate {
-    "     " Setting the author var
-    "     " If forking, please overwrite in your .vimrc.local file
-    "     let g:snips_author = 'Steve Francia <steve.francia@gmail.com>'
-    " " }
-
-
-    " " Tabularize {
-    "     if isdirectory(expand("~/.vim/bundle/tabular"))
-    "         nmap <Leader>a& :Tabularize /&<CR>
-    "         vmap <Leader>a& :Tabularize /&<CR>
-    "         nmap <Leader>a= :Tabularize /^[^=]*\zs=<CR>
-    "         vmap <Leader>a= :Tabularize /^[^=]*\zs=<CR>
-    "         nmap <Leader>a=> :Tabularize /=><CR>
-    "         vmap <Leader>a=> :Tabularize /=><CR>
-    "         nmap <Leader>a: :Tabularize /:<CR>
-    "         vmap <Leader>a: :Tabularize /:<CR>
-    "         nmap <Leader>a:: :Tabularize /:\zs<CR>
-    "         vmap <Leader>a:: :Tabularize /:\zs<CR>
-    "         nmap <Leader>a, :Tabularize /,<CR>
-    "         vmap <Leader>a, :Tabularize /,<CR>
-    "         nmap <Leader>a,, :Tabularize /,\zs<CR>
-    "         vmap <Leader>a,, :Tabularize /,\zs<CR>
-    "         nmap <Leader>a<Bar> :Tabularize /<Bar><CR>
-    "         vmap <Leader>a<Bar> :Tabularize /<Bar><CR>
-    "     endif
-    " " }
-
-    " " Session List {
-    "     set sessionoptions=blank,buffers,curdir,folds,tabpages,winsize
-    "     if isdirectory(expand("~/.vim/bundle/sessionman.vim/"))
-    "         nmap <leader>sl :SessionList<CR>
-    "         nmap <leader>ss :SessionSave<CR>
-    "         nmap <leader>sc :SessionClose<CR>
-    "     endif
-    " " }
-
-    " " JSON {
-    "     nmap <leader>jt <Esc>:%!python -m json.tool<CR><Esc>:set filetype=json<CR>
-    "     let g:vim_json_syntax_conceal = 0
-    " " }
-
-    " " PyMode {
-    "     " Disable if python support not present
-    "     if !has('python') && !has('python3')
-    "         let g:pymode = 0
-    "     endif
-
-    "     if isdirectory(expand("~/.vim/bundle/python-mode"))
-    "         let g:pymode_lint_checkers = ['pyflakes']
-    "         let g:pymode_trim_whitespaces = 0
-    "         let g:pymode_options = 0
-    "         let g:pymode_rope = 0
-    "     endif
-    " " }
-
-
-    " " neocomplete {
-    "     if count(g:spf13_bundle_groups, 'neocomplete')
-    "         let g:acp_enableAtStartup = 0
-    "         let g:neocomplete#enable_at_startup = 1
-    "         let g:neocomplete#enable_smart_case = 1
-    "         let g:neocomplete#enable_auto_delimiter = 1
-    "         let g:neocomplete#max_list = 15
-    "         let g:neocomplete#force_overwrite_completefunc = 1
-
-
-    "         " Define dictionary.
-    "         let g:neocomplete#sources#dictionary#dictionaries = {
-    "                     \ 'default' : '',
-    "                     \ 'vimshell' : $HOME.'/.vimshell_hist',
-    "                     \ 'scheme' : $HOME.'/.gosh_completions'
-    "                     \ }
-
-    "         " Define keyword.
-    "         if !exists('g:neocomplete#keyword_patterns')
-    "             let g:neocomplete#keyword_patterns = {}
-    "         endif
-    "         let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-    "         " Plugin key-mappings {
-    "             " These two lines conflict with the default digraph mapping of <C-K>
-    "             if !exists('g:spf13_no_neosnippet_expand')
-    "                 imap <C-k> <Plug>(neosnippet_expand_or_jump)
-    "                 smap <C-k> <Plug>(neosnippet_expand_or_jump)
-    "             endif
-    "             if exists('g:spf13_noninvasive_completion')
-    "                 inoremap <CR> <CR>
-    "                 " <ESC> takes you out of insert mode
-    "                 inoremap <expr> <Esc>   pumvisible() ? "\<C-y>\<Esc>" : "\<Esc>"
-    "                 " <CR> accepts first, then sends the <CR>
-    "                 inoremap <expr> <CR>    pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
-    "                 " <Down> and <Up> cycle like <Tab> and <S-Tab>
-    "                 inoremap <expr> <Down>  pumvisible() ? "\<C-n>" : "\<Down>"
-    "                 inoremap <expr> <Up>    pumvisible() ? "\<C-p>" : "\<Up>"
-    "                 " Jump up and down the list
-    "                 inoremap <expr> <C-d>   pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
-    "                 inoremap <expr> <C-u>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<C-u>"
-    "             else
-    "                 " <C-k> Complete Snippet
-    "                 " <C-k> Jump to next snippet point
-    "                 imap <silent><expr><C-k> neosnippet#expandable() ?
-    "                             \ "\<Plug>(neosnippet_expand_or_jump)" : (pumvisible() ?
-    "                             \ "\<C-e>" : "\<Plug>(neosnippet_expand_or_jump)")
-    "                 smap <TAB> <Right><Plug>(neosnippet_jump_or_expand)
-
-    "                 inoremap <expr><C-g> neocomplete#undo_completion()
-    "                 inoremap <expr><C-l> neocomplete#complete_common_string()
-    "                 "inoremap <expr><CR> neocomplete#complete_common_string()
-
-    "                 " <CR>: close popup
-    "                 " <s-CR>: close popup and save indent.
-    "                 inoremap <expr><s-CR> pumvisible() ? neocomplete#smart_close_popup()."\<CR>" : "\<CR>"
-
-    "                 function! CleverCr()
-    "                     if pumvisible()
-    "                         if neosnippet#expandable()
-    "                             let exp = "\<Plug>(neosnippet_expand)"
-    "                             return exp . neocomplete#smart_close_popup()
-    "                         else
-    "                             return neocomplete#smart_close_popup()
-    "                         endif
-    "                     else
-    "                         return "\<CR>"
-    "                     endif
-    "                 endfunction
-
-    "                 " <CR> close popup and save indent or expand snippet
-    "                 imap <expr> <CR> CleverCr()
-    "                 " <C-h>, <BS>: close popup and delete backword char.
-    "                 inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-    "                 inoremap <expr><C-y> neocomplete#smart_close_popup()
-    "             endif
-    "             " <TAB>: completion.
-    "             inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-    "             inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<TAB>"
-
-    "             " Courtesy of Matteo Cavalleri
-
-    "             function! CleverTab()
-    "                 if pumvisible()
-    "                     return "\<C-n>"
-    "                 endif
-    "                 let substr = strpart(getline('.'), 0, col('.') - 1)
-    "                 let substr = matchstr(substr, '[^ \t]*$')
-    "                 if strlen(substr) == 0
-    "                     " nothing to match on empty string
-    "                     return "\<Tab>"
-    "                 else
-    "                     " existing text matching
-    "                     if neosnippet#expandable_or_jumpable()
-    "                         return "\<Plug>(neosnippet_expand_or_jump)"
-    "                     else
-    "                         return neocomplete#start_manual_complete()
-    "                     endif
-    "                 endif
-    "             endfunction
-
-    "             imap <expr> <Tab> CleverTab()
-    "         " }
-
-    "         " Enable heavy omni completion.
-    "         if !exists('g:neocomplete#sources#omni#input_patterns')
-    "             let g:neocomplete#sources#omni#input_patterns = {}
-    "         endif
-    "         let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-    "         let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-    "         let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-    "         let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-    "         let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
-    " " }
-    " " neocomplcache {
-    "     elseif count(g:spf13_bundle_groups, 'neocomplcache')
-    "         let g:acp_enableAtStartup = 0
-    "         let g:neocomplcache_enable_at_startup = 1
-    "         let g:neocomplcache_enable_camel_case_completion = 1
-    "         let g:neocomplcache_enable_smart_case = 1
-    "         let g:neocomplcache_enable_underbar_completion = 1
-    "         let g:neocomplcache_enable_auto_delimiter = 1
-    "         let g:neocomplcache_max_list = 15
-    "         let g:neocomplcache_force_overwrite_completefunc = 1
-
-    "         " Define dictionary.
-    "         let g:neocomplcache_dictionary_filetype_lists = {
-    "                     \ 'default' : '',
-    "                     \ 'vimshell' : $HOME.'/.vimshell_hist',
-    "                     \ 'scheme' : $HOME.'/.gosh_completions'
-    "                     \ }
-
-    "         " Define keyword.
-    "         if !exists('g:neocomplcache_keyword_patterns')
-    "             let g:neocomplcache_keyword_patterns = {}
-    "         endif
-    "         let g:neocomplcache_keyword_patterns._ = '\h\w*'
-
-    "         " Plugin key-mappings {
-    "             " These two lines conflict with the default digraph mapping of <C-K>
-    "             imap <C-k> <Plug>(neosnippet_expand_or_jump)
-    "             smap <C-k> <Plug>(neosnippet_expand_or_jump)
-    "             if exists('g:spf13_noninvasive_completion')
-    "                 inoremap <CR> <CR>
-    "                 " <ESC> takes you out of insert mode
-    "                 inoremap <expr> <Esc>   pumvisible() ? "\<C-y>\<Esc>" : "\<Esc>"
-    "                 " <CR> accepts first, then sends the <CR>
-    "                 inoremap <expr> <CR>    pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
-    "                 " <Down> and <Up> cycle like <Tab> and <S-Tab>
-    "                 inoremap <expr> <Down>  pumvisible() ? "\<C-n>" : "\<Down>"
-    "                 inoremap <expr> <Up>    pumvisible() ? "\<C-p>" : "\<Up>"
-    "                 " Jump up and down the list
-    "                 inoremap <expr> <C-d>   pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
-    "                 inoremap <expr> <C-u>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<C-u>"
-    "             else
-    "                 imap <silent><expr><C-k> neosnippet#expandable() ?
-    "                             \ "\<Plug>(neosnippet_expand_or_jump)" : (pumvisible() ?
-    "                             \ "\<C-e>" : "\<Plug>(neosnippet_expand_or_jump)")
-    "                 smap <TAB> <Right><Plug>(neosnippet_jump_or_expand)
-
-    "                 inoremap <expr><C-g> neocomplcache#undo_completion()
-    "                 inoremap <expr><C-l> neocomplcache#complete_common_string()
-    "                 "inoremap <expr><CR> neocomplcache#complete_common_string()
-
-    "                 function! CleverCr()
-    "                     if pumvisible()
-    "                         if neosnippet#expandable()
-    "                             let exp = "\<Plug>(neosnippet_expand)"
-    "                             return exp . neocomplcache#close_popup()
-    "                         else
-    "                             return neocomplcache#close_popup()
-    "                         endif
-    "                     else
-    "                         return "\<CR>"
-    "                     endif
-    "                 endfunction
-
-    "                 " <CR> close popup and save indent or expand snippet
-    "                 imap <expr> <CR> CleverCr()
-
-    "                 " <CR>: close popup
-    "                 " <s-CR>: close popup and save indent.
-    "                 inoremap <expr><s-CR> pumvisible() ? neocomplcache#close_popup()."\<CR>" : "\<CR>"
-    "                 "inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
-
-    "                 " <C-h>, <BS>: close popup and delete backword char.
-    "                 inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-    "                 inoremap <expr><C-y> neocomplcache#close_popup()
-    "             endif
-    "             " <TAB>: completion.
-    "             inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-    "             inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<TAB>"
-    "         " }
-
-    "         " Enable omni completion.
-    "         autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    "         autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    "         autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    "         autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    "         autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    "         autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-    "         autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
-
-    "         " Enable heavy omni completion.
-    "         if !exists('g:neocomplcache_omni_patterns')
-    "             let g:neocomplcache_omni_patterns = {}
-    "         endif
-    "         let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-    "         let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-    "         let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-    "         let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-    "         let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
-    "         let g:neocomplcache_omni_patterns.go = '\h\w*\.\?'
-    " " }
-    " " Normal Vim omni-completion {
-    " " To disable omni complete, add the following to your .vimrc.before.local file:
-    " "   let g:spf13_no_omni_complete = 1
-    "     elseif !exists('g:spf13_no_omni_complete')
-    "         " Enable omni-completion.
-    "         autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    "         autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    "         autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    "         autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    "         autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    "         autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-    "         autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
-
-    "     endif
-    " " }
-
-    " " FIXME: Isn't this for Syntastic to handle?
-    " " Haskell post write lint and check with ghcmod
-    " " $ `cabal install ghcmod` if missing and ensure
-    " " ~/.cabal/bin is in your $PATH.
-    " if !executable("ghcmod")
-    "     autocmd BufWritePost *.hs GhcModCheckAndLintAsync
-    " endif
-
-    " " indent_guides {
-    "     if isdirectory(expand("~/.vim/bundle/vim-indent-guides/"))
-    "         let g:indent_guides_start_level = 2
-    "         let g:indent_guides_guide_size = 1
-    "         let g:indent_guides_enable_on_vim_startup = 1
-    "     endif
-    " " }
-
-    " " Wildfire {
-    " let g:wildfire_objects = {
-    "             \ "*" : ["i'", 'i"', "i)", "i]", "i}", "ip"],
-    "             \ "html,xml" : ["at"],
-    "             \ }
-    " " }
 " }}}
