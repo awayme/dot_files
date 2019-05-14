@@ -567,7 +567,7 @@ EOF
     " Plug 'deoplete-plugins/deoplete-jedi'
     Plug 'honza/vim-snippets'
     Plug 'gorodinskiy/vim-coloresque'  "color preview for vim.
-    Plug 'mattn/emmet-vim' "support for expanding abbreviations similar to emmet
+    " Plug 'mattn/emmet-vim' "support for expanding abbreviations similar to emmet
 
     " Plug 'hail2u/vim-css3-syntax'
     Plug 'tpope/vim-commentary'
