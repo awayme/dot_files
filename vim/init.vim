@@ -570,7 +570,7 @@ EOF
     " Plug 'mattn/emmet-vim' "support for expanding abbreviations similar to emmet
 
     " Plug 'hail2u/vim-css3-syntax'
-    Plug 'tpope/vim-commentary'
+    " Plug 'tpope/vim-commentary'
     Plug 'https://github.com/majutsushi/tagbar'
 
     " file type
@@ -748,6 +748,9 @@ EOF
             let g:airline_right_sep='‹' " Slightly fancier than '<'
         endif
     " }}}
+    " => vim bufferline{{{
+    let g:bufferline_echo = 0
+    " }}}
     " => NERDTree plugin {{{
         map <C-e> :NERDTreeToggle<CR>
         map <leader>e :NERDTreeFind<CR>
@@ -842,13 +845,15 @@ EOF
 " }}}
 
 " my self-system {{{
-    " if OSX()
+    if OSX()
+        command! DlogFrame :r !tt history --days 1
+        command! -nargs=1 DlogFrameDate :r !tt history --days <args>
     "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -v-1d "+\%Y-\%m-\%d"`
     " else
     "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
-    " endif
+    endif
     " command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start `date -d yesterday +\%Y-\%m-\%d` --end `date -d yesterday +\%Y-\%m-\%d`
-    command! DlogFrame :r !~/bin/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc --days 1 --end 1
+    " command! DlogFrame :r !~/bin/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc --days 1 --end 1
     " command! -nargs=1 DlogFrameDate :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start "<args>" --end "<args>"
 
     " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"

@@ -95,9 +95,12 @@ switch (uname)
         end
         set -gx PATH $manpath_sorted
     case Darwin
-        function tcf
-            tct (tc tc list --flat | fzf)
+        # tct (tc tc list --flat | fzf)
+        function ttf
+            ttt (tt tasks-list | fzf)
         end
+
+        # set -gx GOPATH ~/Data/Personal-project/go/
 
         set -gx JAVA_HOME /Library/Java/JavaVirtualMachines/jdk/Contents/Home
         # set -gx JAVAFX_HOME /Library/Java/JavaVirtualMachines/javafx

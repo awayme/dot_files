@@ -130,9 +130,10 @@ install_widgets() {
     sudo apt-add-repository ppa:fish-shell/release-2 -y
     sudo add-apt-repository ppa:aacebedo/fasd -y
     sudo add-apt-repository ppa:x4121/ripgrep -y
+    sudo apt-add-repository ppa:neovim-ppa/stable
     
     sudo apt-get update
-    sudo apt-get install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
+    sudo apt-get neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
 
     fd_deb="fd_7.2.0_amd64.deb"
     wget "https://github.com/sharkdp/fd/releases/download/v7.2.0/$fd_deb"
