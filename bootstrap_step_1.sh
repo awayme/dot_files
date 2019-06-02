@@ -126,50 +126,104 @@ create_symlinks() {
 }
 
 install_widgets() {
-    sudo add-apt-repository ppa:lazygit-team/release -y
-    sudo apt-add-repository ppa:fish-shell/release-2 -y
-    sudo add-apt-repository ppa:aacebedo/fasd -y
-    sudo add-apt-repository ppa:x4121/ripgrep -y
-    sudo apt-add-repository ppa:neovim-ppa/stable
-    
-    sudo apt-get update
-    sudo apt-get neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
+    read -p "Install softwares?[y/n] " answer
+    while true
+    do
+      case $answer in
+       [yY]* ) echo "INSTALL: neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
+               echo "================================"
 
-    fd_deb="fd_7.2.0_amd64.deb"
-    wget "https://github.com/sharkdp/fd/releases/download/v7.2.0/$fd_deb"
-    sudo dpkg -i $fd_deb
-    rm $fd_deb
-    
-    sync_repo           "$HOME/bin/ranger" \
-                        "$RANGER_URI" \
-                        "master" \
-                        "ranger"
+               sudo add-apt-repository ppa:lazygit-team/release -y
+               sudo apt-add-repository ppa:fish-shell/release-2 -y
+               #sudo add-apt-repository ppa:aacebedo/fasd -y
+               sudo add-apt-repository ppa:x4121/ripgrep -y
+               sudo apt-add-repository ppa:neovim-ppa/stable -y
+               
+               sudo apt-get update
+               sudo apt-get install nodejs yarn neovim vim fish ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
+               #sudo apt-get neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
 
-    mv ~/.config/ranger ~/.config/ranger.org
+               #fd_deb="fd_7.2.0_amd64.deb"
+               #wget "https://github.com/sharkdp/fd/releases/download/v7.2.0/$fd_deb"
+               #sudo dpkg -i $fd_deb
+               #rm $fd_deb
 
+               break;;
+
+       [nN]* ) break;;
+               # exit;;
+
+       * )     echo "Dude, just enter Y or N, please."; break ;;
+      esac
+    done
+
+    read -p "Install ranger?[y/n] " answer
+    while true
+    do
+      case $answer in
+       [yY]* ) echo "================================"
+	       sync_repo        "$HOME/bin/ranger" \
+	           		"$RANGER_URI" \
+	           		"master" \
+	           		"ranger"
+
+	       #mv ~/.config/ranger ~/.config/ranger.org
+
+               break;;
+
+       [nN]* ) break;;
+       * )     echo "Dude, just enter Y or N, please."; break ;;
+      esac
+    done
+
+    read -p "Install fzf?[y/n] " answer
+    while true
+    do
+      case $answer in
+       [yY]* ) echo "================================"
                         #"--depth 1 https://github.com/junegunn/fzf.git" \
-    sync_repo           "$HOME/.fzf" \
-                        "https://github.com/junegunn/fzf.git" \
-                        "master" \
-                        "fzf"
-    ~/.fzf/install
+	       sync_repo           "$HOME/.fzf" \
+	           		"https://github.com/junegunn/fzf.git" \
+	           		"master" \
+	           		"fzf"
+	       ~/.fzf/install
+               break;;
 
-    mkdir -p ~/.config/vimfiles/persistence
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+       [nN]* ) break;;
+       * )     echo "Dude, just enter Y or N, please."; break ;;
+      esac
+    done
 
+    read -p "Install vim/nvim-plug?[y/n] " answer
+    while true
+    do
+      case $answer in
+       [yY]* ) echo "================================"
+	       mkdir -p ~/.config/vimfiles/persistence
+           mkdir -p ~/.config/nvim/autoload
+	       curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+	   	    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+               break;;
+           cd ~/.config/nvim/autoload 
+           ln -s ~/.vim/autoload/plug.vim
+
+           cd ~/.config/nvim/
+           virtualenv env2
+           python3 -m venv env3
+           env2/bin/pip install -U pip
+           env2/bin/pip install pynvim neovim
+           env3/bin/pip install -U pip
+           env3/bin/pip install pynvim neovim
+
+           sudo gem install neovim
+           sudo npm install -g neovim
+           curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+       [nN]* ) break;;
+       * )     echo "Dude, just enter Y or N, please."; break ;;
+      esac
+    done
 }
 
-change_sh() {
-    sh=`cat /etc/shells | grep /usr/bin/fish`
-    if [ "/usr/bin/fish"x = "$sh"x ]; then
-        if [ "/usr/bin/fish"x != "$SHELL"x ]; then
-            chsh -s /usr/bin/fish
-        fi
-    else
-        msg "You need to install fish."
-    fi
-}
 ############################ MAIN()
 variable_set "$HOME"
 program_must_exist "vim"
@@ -180,6 +234,7 @@ program_must_exist "git"
 #                    "$HOME/.tmux.conf"\
 #                    "$HOME/.zshrc"
 
+echo 'Update .dot repo'
 sync_repo           "$APP_PATH" \
                     "$REPO_URI" \
                     "$REPO_BRANCH" \
