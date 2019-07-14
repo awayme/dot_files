@@ -106,8 +106,8 @@ switch (uname)
         # set -gx JAVAFX_HOME /Library/Java/JavaVirtualMachines/javafx
         # set -gx JAVAFX_LIB $JAVAFX_HOME/lib
         set -gx CLASSPATH $JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
-
-        set --local manpath_list ~/bin /usr/local/opt/coreutils/libexec/gnubin /usr/local/opt/openssl@1.1/bin /usr/local/opt/sqlite/bin /usr/local/opt/sphinx-doc/bin /usr/local/bin/ /usr/local/opt/mysql@5.7/bin $JAVA_HOME/bin $PATH 
+        set --local manpath_list ~/bin /usr/local/opt/coreutils/libexec/gnubin /usr/local/sbin /usr/local/bin /usr/local/opt/sqlite/bin $JAVA_HOME/bin $PATH 
+        # set --local manpath_list ~/bin /usr/local/sbin /usr/local/opt/coreutils/libexec/gnubin /usr/local/opt/openssl@1.1/bin /usr/local/opt/sqlite/bin /usr/local/opt/sphinx-doc/bin /usr/local/bin/ /usr/local/opt/mysql@5.7/bin $JAVA_HOME/bin $PATH 
         set --local manpath_sorted
         for i in $manpath_list
             if not contains $i $manpath_sorted

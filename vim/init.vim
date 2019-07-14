@@ -544,17 +544,27 @@ EOF
     Plug 'bling/vim-bufferline'
     Plug 'iCyMind/NeoSolarized'
     " Plug 'Konfekt/FastFold'
+    "
+    Plug 'Yggdroot/LeaderF'
 
     " " Edit
     Plug 'https://github.com/wsdjeg/vim-mundo.git', { 'on':  'MundoToggle' }
-    Plug 'scrooloose/nerdtree'
+    " Plug 'scrooloose/nerdtree'
+    if has('nvim')
+      Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
+    else
+      Plug 'Shougo/defx.nvim'
+      Plug 'roxma/nvim-yarp'
+      Plug 'roxma/vim-hug-neovim-rpc'
+    endif
     Plug 'https://github.com/kshenoy/vim-signature'  "Plugin to toggle, display and navigate marks
     Plug 'https://github.com/junegunn/rainbow_parentheses.vim'
     " Plug 'https://github.com/Shougo/unite.vim'
     " Plug 'https://github.com/Shougo/neomru.vim'
     Plug 'https://github.com/mhinz/vim-grepper.git'
     Plug 'https://github.com/Yggdroot/indentLine'
-    Plug 'terryma/vim-multiple-cursors'
+    " Plug 'terryma/vim-multiple-cursors'
+    Plug 'mg979/vim-visual-multi'
     Plug 'easymotion/vim-easymotion'
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-surround'
@@ -568,10 +578,12 @@ EOF
     Plug 'honza/vim-snippets'
     Plug 'gorodinskiy/vim-coloresque'  "color preview for vim.
     " Plug 'mattn/emmet-vim' "support for expanding abbreviations similar to emmet
+    " Plug 'neomake/neomake'
 
     " Plug 'hail2u/vim-css3-syntax'
-    " Plug 'tpope/vim-commentary'
-    Plug 'https://github.com/majutsushi/tagbar'
+    Plug 'tpope/vim-commentary'
+    " Plug 'https://github.com/majutsushi/tagbar'
+    Plug 'liuchengxu/vista.vim'
 
     " file type
     Plug 'https://github.com/dag/vim-fish.git'
@@ -700,7 +712,12 @@ EOF
 
         imap <C-j> <Plug>(coc-snippets-expand)
 
-        nnoremap <leader>s :CocList mru<CR>
+        " nnoremap <leader>s :CocList mru<CR>
+    " }}}
+    " => LeaderF {{{
+        nnoremap <leader>sm :Leaderf mru<CR>
+        nnoremap <leader>sf :Leaderf file<CR>
+        nnoremap <leader>sb :Leaderf buffer<CR>
     " }}}
     " => UltiSnip {{{
         " if exists('g:UltiSnipsMinePath')
@@ -721,7 +738,7 @@ EOF
         autocmd VimEnter *.py RainbowParentheses
     " }}}
     " => TagBar {{{
-        nnoremap <silent> <leader>tt :TagbarToggle<CR>
+        " nnoremap <silent> <leader>tt :TagbarToggle<CR>
     " }}}
     " => MUndo {{{
         nnoremap <Leader>u :MundoToggle<CR>
@@ -752,21 +769,25 @@ EOF
     let g:bufferline_echo = 0
     " }}}
     " => NERDTree plugin {{{
-        map <C-e> :NERDTreeToggle<CR>
-        map <leader>e :NERDTreeFind<CR>
-        nmap <leader>nt :NERDTreeFind<CR>
+        " map <C-e> :NERDTreeToggle<CR>
+        " map <leader>e :NERDTreeFind<CR>
+        " nmap <leader>nt :NERDTreeFind<CR>
 
-        " let g:NERDShutUp=1
-        let NERDTreeShowBookmarks=1
-        let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
-        let NERDTreeChDirMode=0
-        let NERDTreeQuitOnOpen=1
-        let NERDTreeMouseMode=2
-        let NERDTreeShowHidden=1
-        let NERDTreeKeepTreeInNewTab=1
-        let g:nerdtree_tabs_open_on_gui_startup=0
+        " " let g:NERDShutUp=1
+        " let NERDTreeShowBookmarks=1
+        " let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
+        " let NERDTreeChDirMode=0
+        " let NERDTreeQuitOnOpen=1
+        " let NERDTreeMouseMode=2
+        " let NERDTreeShowHidden=1
+        " let NERDTreeKeepTreeInNewTab=1
+        " let g:nerdtree_tabs_open_on_gui_startup=0
     " }}}
-    "" => syntastic {{{
+    
+    " => Defx plugin {{{
+        map <C-e> :Defx<CR>
+    " }}}
+    " => syntastic {{{
     "    " autocmd QuickFixCmdPost l* nested lwindow
     "    " autocmd! BufWritePost *.py SyntasticCheck
     "    " let g:syntastic_quiet_messages={'level':'warnings'}

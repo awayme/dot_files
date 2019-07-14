@@ -126,19 +126,39 @@ create_symlinks() {
 }
 
 install_widgets() {
-    sudo add-apt-repository ppa:lazygit-team/release -y
-    sudo apt-add-repository ppa:fish-shell/release-2 -y
-    sudo add-apt-repository ppa:aacebedo/fasd -y
-    sudo add-apt-repository ppa:x4121/ripgrep -y
-    sudo apt-add-repository ppa:neovim-ppa/stable
-    
-    sudo apt-get update
-    sudo apt-get neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
+    read -p "Run?[y/n] " answer
 
-    fd_deb="fd_7.2.0_amd64.deb"
-    wget "https://github.com/sharkdp/fd/releases/download/v7.2.0/$fd_deb"
-    sudo dpkg -i $fd_deb
-    rm $fd_deb
+    # (2) handle the command line argument we were given
+    while true
+    do
+      case $answer in
+       [yY]* ) echo "INSTALL: neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
+               echo "================================"
+
+               sudo add-apt-repository ppa:lazygit-team/release -y
+               sudo apt-add-repository ppa:fish-shell/release-2 -y
+               sudo add-apt-repository ppa:aacebedo/fasd -y
+               sudo add-apt-repository ppa:x4121/ripgrep -y
+               sudo apt-add-repository ppa:neovim-ppa/stable -y
+               
+               sudo apt-get update
+               sudo apt-get neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
+
+               fd_deb="fd_7.2.0_amd64.deb"
+               wget "https://github.com/sharkdp/fd/releases/download/v7.2.0/$fd_deb"
+               sudo dpkg -i $fd_deb
+               rm $fd_deb
+
+               break;;
+
+       [nN]* ) break;;
+               # exit;;
+
+       * )     echo "Dude, just enter Y or N, please."; break ;;
+      esac
+    done
+
+    exit;;
     
     sync_repo           "$HOME/bin/ranger" \
                         "$RANGER_URI" \
