@@ -115,69 +115,15 @@ create_symlinks() {
     lnif "$source_path/ranger/rc.conf.linux" "$source_path/ranger/rc.conf"
     lnif "$source_path/ranger/rifle.conf.linux" "$source_path/ranger/rifle.conf"
 
-    #if program_exists "nvim"; then
-    #    lnif "$source_path/.vim"       "$target_path/.config/nvim"
-    #    lnif "$source_path/.vimrc"     "$target_path/.config/nvim/init.vim"
-    #fi
+    if program_exists "nvim"; then
+        #lnif "$source_path/.vim"       "$target_path/.config/nvim"
+        #lnif "$source_path/.vimrc"     "$target_path/.config/nvim/init.vim"
+        lnif "$source_path/vim/init.vim"     "$target_path/.config/nvim/init.vim"
+    fi
 
     ret="$?"
     success "Setting up configurtion symlinks."
     debug
-}
-
-install_widgets() {
-    read -p "Run?[y/n] " answer
-
-    # (2) handle the command line argument we were given
-    while true
-    do
-      case $answer in
-       [yY]* ) echo "INSTALL: neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
-               echo "================================"
-
-               sudo add-apt-repository ppa:lazygit-team/release -y
-               sudo apt-add-repository ppa:fish-shell/release-2 -y
-               sudo add-apt-repository ppa:aacebedo/fasd -y
-               sudo add-apt-repository ppa:x4121/ripgrep -y
-               sudo apt-add-repository ppa:neovim-ppa/stable -y
-               
-               sudo apt-get update
-               sudo apt-get neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
-
-               fd_deb="fd_7.2.0_amd64.deb"
-               wget "https://github.com/sharkdp/fd/releases/download/v7.2.0/$fd_deb"
-               sudo dpkg -i $fd_deb
-               rm $fd_deb
-
-               break;;
-
-       [nN]* ) break;;
-               # exit;;
-
-       * )     echo "Dude, just enter Y or N, please."; break ;;
-      esac
-    done
-
-    exit;;
-    
-    sync_repo           "$HOME/bin/ranger" \
-                        "$RANGER_URI" \
-                        "master" \
-                        "ranger"
-
-    mv ~/.config/ranger ~/.config/ranger.org
-
-                        #"--depth 1 https://github.com/junegunn/fzf.git" \
-    sync_repo           "$HOME/.fzf" \
-                        "https://github.com/junegunn/fzf.git" \
-                        "master" \
-                        "fzf"
-    ~/.fzf/install
-
-    mkdir -p ~/.config/vimfiles/persistence
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
 }
 
 change_sh() {
@@ -192,21 +138,19 @@ change_sh() {
 }
 ############################ MAIN()
 variable_set "$HOME"
-program_must_exist "vim"
-program_must_exist "git"
 
-#do_backup           "$HOME/.vim" \
-#                    "$HOME/.vimrc" \
-#                    "$HOME/.tmux.conf"\
-#                    "$HOME/.zshrc"
+#change_sh
 
-sync_repo           "$APP_PATH" \
-                    "$REPO_URI" \
-                    "$REPO_BRANCH" \
-                    "$app_name"
+#mv ~/.config/ranger ~/.config/ranger.org
+
+create_symlinks     "$APP_PATH" \
+                    "$HOME"
+
+msg "nvim +checkhealth"
+msg "nvim: Plug install and compile youcompleteme"
+msg "nvim +checkhealth"
+msg "CocInstall coc-python coc-emmet coc-snippets"
+msg             "\nThanks for installing $app_name."
 
 
-install_widgets
-
-msg "curl -L https://get.oh-my.fish | fish"
-msg "omf install fasd"
+# pdftotext mutool
