@@ -110,6 +110,8 @@ create_symlinks() {
     lnif "$source_path/fish/config.fish" "$target_path/.config/omf/init.fish"
     lnif "$source_path/vim/init.vim"     "$target_path/.vimrc"
     lnif "$source_path/tmux/tmux.conf"   "$target_path/.tmux.conf"
+    mkdir -p ~/.pip/
+    lnif "$source_path/python/pip.conf"   "$target_path/.pip/pip.conf"
 
     lnif "$source_path/ranger"   "$target_path/.config/ranger"
     lnif "$source_path/ranger/rc.conf.linux" "$source_path/ranger/rc.conf"
@@ -142,11 +144,12 @@ install_widgets() {
 
                sudo apt-get update
 
-               sudo apt-get install nodejs yarn neovim fish ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
+               sudo apt-get install nodejs yarn neovim fish ripgrep fasd lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
 
-               wget "https://github.com/sharkdp/fd/releases/download/v7.3.0/fd_7.3.0_amd64.deb"
+	       fd_deb=fd_7.3.0_amd64.deb
+               wget "https://github.com/sharkdp/fd/releases/download/v7.3.0/$fd_deb"
                sudo dpkg -i $fd_deb
-               rm fd_*.deb
+               rm $fd_deb
 
                break;;
 
@@ -167,6 +170,7 @@ install_widgets() {
 	           		"master" \
 	           		"ranger"
 
+	       mkdir -p ~/.config/ranger/
 	       mv ~/.config/ranger ~/.config/ranger.org
 
            break;;
@@ -200,10 +204,10 @@ install_widgets() {
       case $answer in
        [yY]* ) echo "================================"
 	       mkdir -p ~/.config/vimfiles/persistence
-           mkdir -p ~/.config/nvim/autoload
+               mkdir -p ~/.config/nvim/autoload
 	       curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 	   	    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-               break;;
+
            cd ~/.config/nvim/autoload 
            ln -s ~/.vim/autoload/plug.vim
 
@@ -218,6 +222,9 @@ install_widgets() {
            sudo gem install neovim
            sudo npm install -g neovim
            curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+
+           break;;
+
        [nN]* ) break;;
        * )     echo "Dude, just enter Y or N, please."; break ;;
       esac
@@ -226,7 +233,7 @@ install_widgets() {
 
 ############################ MAIN()
 variable_set "$HOME"
-program_must_exist "vim"
+#program_must_exist "vim"
 program_must_exist "git"
 
 #do_backup           "$HOME/.vim" \

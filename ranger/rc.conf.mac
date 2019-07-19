@@ -750,9 +750,11 @@ copytmap <ESC> q Q w <C-c>
 
 
 map xt shell ~/bin/open_iterm_window.sh %d
-map xc console shell atool -a "`basename "$PWD"`".zip %%s
+map xz console shell atool -a "`basename "$PWD"`".zip %%s
 # map xm shell open -a meld --args %d/%f
-map xm shell open -a meld --args %p
+map xc shell open -a 'Araxis Merge.app' %p
+map xg shell open -a 'gitx.app' %d
+# map xm shell open -a 'Araxis Merge.app' --args %p
 #map \t shell xfce4-terminal --working-directory=%d
 
 # default_linemode devicons

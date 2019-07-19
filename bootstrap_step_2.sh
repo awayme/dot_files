@@ -114,6 +114,7 @@ create_symlinks() {
     lnif "$source_path/ranger"   "$target_path/.config/ranger"
     lnif "$source_path/ranger/rc.conf.linux" "$source_path/ranger/rc.conf"
     lnif "$source_path/ranger/rifle.conf.linux" "$source_path/ranger/rifle.conf"
+    lnif "$source_path/sh/ranger.sh" "$source_path/bin/ranger.sh"
 
     if program_exists "nvim"; then
         #lnif "$source_path/.vim"       "$target_path/.config/nvim"
@@ -139,7 +140,7 @@ change_sh() {
 ############################ MAIN()
 variable_set "$HOME"
 
-#change_sh
+change_sh
 
 #mv ~/.config/ranger ~/.config/ranger.org
 
@@ -147,7 +148,7 @@ create_symlinks     "$APP_PATH" \
                     "$HOME"
 
 msg "nvim +checkhealth"
-msg "nvim: Plug install and compile youcompleteme"
+msg "nvim: Plug install"
 msg "nvim +checkhealth"
 msg "CocInstall coc-python coc-emmet coc-snippets"
 msg             "\nThanks for installing $app_name."

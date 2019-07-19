@@ -786,6 +786,35 @@ EOF
     
     " => Defx plugin {{{
         map <C-e> :Defx<CR>
+        call defx#custom#option('_', {
+              \ 'winwidth': 40,
+              \ 'split': 'vertical',
+              \ 'direction': 'topleft',
+              \ 'show_ignored_files': 0,
+              \ 'buffer_name': '',
+              \ 'toggle': 1,
+              \ 'resume': 1
+              \ })
+
+        autocmd FileType defx call s:defx_my_settings()
+        function! s:defx_my_settings() abort
+          setl nonumber
+          setl norelativenumber
+          setl listchars=
+
+          " Define mappings
+          nnoremap <silent><buffer><expr> <CR>
+          \ defx#do_action('drop')
+          nnoremap <silent><buffer><expr> C
+          \ defx#do_action('toggle_columns',
+          \                'mark:filename:type:size:time')
+          nnoremap <silent><buffer><expr> yy
+          \ defx#do_action('yank_path')
+          nnoremap <silent><buffer><expr> .
+          \ defx#do_action('toggle_ignored_files')
+          nnoremap <silent><buffer><expr> q
+          \ defx#do_action('quit')
+        endfunction
     " }}}
     " => syntastic {{{
     "    " autocmd QuickFixCmdPost l* nested lwindow
