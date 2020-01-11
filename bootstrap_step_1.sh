@@ -133,7 +133,7 @@ install_widgets() {
     while true
     do
       case $answer in
-       [yY]* ) echo "INSTALL: neovim install vim fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
+       [yY]* ) echo "INSTALL: neovim universal-ctags fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
                echo "================================"
 
                sudo add-apt-repository ppa:lazygit-team/release -y
@@ -144,7 +144,8 @@ install_widgets() {
 
                sudo apt-get update
 
-               sudo apt-get install nodejs yarn neovim fish ripgrep fasd lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
+               sudo apt-get install nodejs neovim fish ripgrep fasd lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
+                # yarn 
 
 	       fd_deb=fd_7.3.0_amd64.deb
                wget "https://github.com/sharkdp/fd/releases/download/v7.3.0/$fd_deb"

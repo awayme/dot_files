@@ -1,6 +1,6 @@
 let g:consolidated_directory = $HOME . '/.config/vimfiles/persistence/'
 
-" let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
+let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
 
 let plugin_manager_path = $HOME . '/.config/vimfiles/plugins/'
 if has('nvim')
@@ -8,7 +8,6 @@ if has('nvim')
     let g:python3_host_prog = $HOME . '/.config/nvim/env3/bin/python'
 endif
 
-" let python_virtualenv = $HOME . "/bin/env/"
 let python_virtualenv = $HOME . '/.config/nvim/env3/'
 
 " Environment {{{
@@ -541,15 +540,12 @@ EOF
 
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
-    Plug 'bling/vim-bufferline'
     Plug 'iCyMind/NeoSolarized'
-    " Plug 'Konfekt/FastFold'
     "
     Plug 'Yggdroot/LeaderF'
 
-    " " Edit
+    " Edit
     Plug 'https://github.com/wsdjeg/vim-mundo.git', { 'on':  'MundoToggle' }
-    " Plug 'scrooloose/nerdtree'
     if has('nvim')
       Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
     else
@@ -559,8 +555,6 @@ EOF
     endif
     Plug 'https://github.com/kshenoy/vim-signature'  "Plugin to toggle, display and navigate marks
     Plug 'https://github.com/junegunn/rainbow_parentheses.vim'
-    " Plug 'https://github.com/Shougo/unite.vim'
-    " Plug 'https://github.com/Shougo/neomru.vim'
     Plug 'https://github.com/mhinz/vim-grepper.git'
     Plug 'https://github.com/Yggdroot/indentLine'
     " Plug 'terryma/vim-multiple-cursors'
@@ -571,18 +565,25 @@ EOF
     Plug 'mhinz/vim-signify' "Signify (or just Sy) uses the sign column to indicate added, modified and removed lines in a file that is managed by a version control system (VCS).
     Plug 'https://github.com/elzr/vim-json'
 
+    if has('nvim')
+        Plug 'ncm2/ncm2'
+        Plug 'roxma/nvim-yarp'
+        Plug 'ncm2/ncm2-bufword'
+        Plug 'ncm2/ncm2-path'
+        Plug 'filipekiss/ncm2-look.vim'
+        Plug 'ncm2/ncm2-gtags'
+        Plug 'ncm2/ncm2-html-subscope'
+        Plug 'ncm2/ncm2-jedi'
+        Plug 'ncm2/ncm2-ultisnips'
+        Plug 'SirVer/ultisnips'
+        Plug 'honza/vim-snippets'
+    endif
+    Plug 'ludovicchabant/vim-gutentags'
     " Developement
-    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
-    " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    " Plug 'deoplete-plugins/deoplete-jedi'
-    Plug 'honza/vim-snippets'
     Plug 'gorodinskiy/vim-coloresque'  "color preview for vim.
     " Plug 'mattn/emmet-vim' "support for expanding abbreviations similar to emmet
-    " Plug 'neomake/neomake'
 
-    " Plug 'hail2u/vim-css3-syntax'
     Plug 'tpope/vim-commentary'
-    " Plug 'https://github.com/majutsushi/tagbar'
     Plug 'liuchengxu/vista.vim'
 
     " file type
@@ -601,118 +602,39 @@ EOF
         " let g:unite_source_file_mru_long_limit = 100
         " nnoremap <leader>s :Unite -start-insert buffer file_mru<CR>
     " }}}
-    " => coc {{{
-        " Use tab for trigger completion with characters ahead and navigate.
-        " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-        inoremap <silent><expr> <TAB>
-              \ pumvisible() ? "\<C-n>" :
-              \ <SID>check_back_space() ? "\<TAB>" :
-              \ coc#refresh()
-        inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+    " => ncm2 {{{
+    if has('nvim')
+        " enable ncm2 for all buffers
+        autocmd BufEnter * call ncm2#enable_for_buffer()
+        " IMPORTANT: :help Ncm2PopupOpen for more information
+        set completeopt=noinsert,menuone,noselect
 
-        function! s:check_back_space() abort
-          let col = col('.') - 1
-          return !col || getline('.')[col - 1]  =~# '\s'
-        endfunction
+        " CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
+        inoremap <c-c> <ESC>
 
-        " Use <c-space> to trigger completion.
-        " inoremap <silent><expr> <c-space> coc#refresh()
+        " When the <Enter> key is pressed while the popup menu is visible, it only
+        " hides the menu. Use this mapping to close the menu and also start a new
+        " line.
+        inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
 
-        " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-        " Coc only does snippet and additional edit on confirm.
-        inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+        " NOTE: you need to install completion sources to get completions. Check
+        " our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
+        inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+        inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-        " Use `[c` and `]c` to navigate diagnostics
-        nmap <silent> [c <Plug>(coc-diagnostic-prev)
-        nmap <silent> ]c <Plug>(coc-diagnostic-next)
+        " let g:ncm2_look_enabled = 1
+        " let b:ncm2_look_enabled = 1
 
-        " Remap keys for gotos
-        nmap <silent> gd <Plug>(coc-definition)
-        nmap <silent> gy <Plug>(coc-type-definition)
-        nmap <silent> gi <Plug>(coc-implementation)
-        nmap <silent> gr <Plug>(coc-references)
+        " Press enter key to trigger snippet expansion
+        " The parameters are the same as `:help feedkeys()`
+        " inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
 
-        " Use K to show documentation in preview window
-        nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-        function! s:show_documentation()
-          if (index(['vim','help'], &filetype) >= 0)
-            execute 'h '.expand('<cword>')
-          else
-            call CocAction('doHover')
-          endif
-        endfunction
-
-        " Highlight symbol under cursor on CursorHold
-        autocmd CursorHold * silent call CocActionAsync('highlight')
-
-        " Remap for rename current word
-        nmap <leader>rn <Plug>(coc-rename)
-
-        " Remap for format selected region
-        xmap <leader>f  <Plug>(coc-format-selected)
-        nmap <leader>f  <Plug>(coc-format-selected)
-
-        augroup mygroup
-          autocmd!
-          " Setup formatexpr specified filetype(s).
-          autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-          " Update signature help on jump placeholder
-          autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-        augroup end
-
-        " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
-        xmap <leader>a  <Plug>(coc-codeaction-selected)
-        nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-        " Remap for do codeAction of current line
-        nmap <leader>ac  <Plug>(coc-codeaction)
-        " Fix autofix problem of current line
-        nmap <leader>qf  <Plug>(coc-fix-current)
-
-        " Use `:Format` to format current buffer
-        command! -nargs=0 Format :call CocAction('format')
-
-        " Use `:Fold` to fold current buffer
-        command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-
-        " Add diagnostic info for https://github.com/itchyny/lightline.vim
-        let g:lightline = {
-              \ 'colorscheme': 'wombat',
-              \ 'active': {
-              \   'left': [ [ 'mode', 'paste' ],
-              \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-              \ },
-              \ 'component_function': {
-              \   'cocstatus': 'coc#status'
-              \ },
-              \ }
-
-
-
-        " Using CocList
-        " Show all diagnostics
-        nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-        " Manage extensions
-        nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-        " Show commands
-        nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-        " Find symbol of current document
-        nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-        " Search workspace symbols
-        nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-        " Do default action for next item.
-        nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-        " Do default action for previous item.
-        nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-        " Resume latest coc list
-        nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
-
-
-        imap <C-j> <Plug>(coc-snippets-expand)
-
-        " nnoremap <leader>s :CocList mru<CR>
+        " c-j c-k for moving in snippet
+        " let g:UltiSnipsExpandTrigger		= "<Plug>(ultisnips_expand)"
+        " let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
+        " let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
+        " let g:UltiSnipsRemoveSelectModeMappings = 0
+    endif
     " }}}
     " => LeaderF {{{
         nnoremap <leader>sm :Leaderf mru<CR>
@@ -720,19 +642,19 @@ EOF
         nnoremap <leader>sb :Leaderf buffer<CR>
     " }}}
     " => UltiSnip {{{
-        " if exists('g:UltiSnipsMinePath')
-        "     let &runtimepath.= ','.g:UltiSnipsMinePath
-        " endif
-        " " autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
+        if exists('g:UltiSnipsMinePath')
+            let &runtimepath.= ','.g:UltiSnipsMinePath
+        endif
+        " autocmd! BufEnter *.md UltiSnipsAddFiletypes md.markdown
 
-        " " " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-        " " let g:UltiSnipsExpandTrigger="<tab>"
-        " " let g:UltiSnipsJumpForwardTrigger="<tab>"
-        " " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+        " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+        " let g:UltiSnipsExpandTrigger="<tab>"
+        " let g:UltiSnipsJumpForwardTrigger="<tab>"
+        " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
-        " let g:UltiSnipsExpandTrigger = '<C-j>'
-        " let g:UltiSnipsJumpForwardTrigger = '<C-j>'
-        " let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
+        let g:UltiSnipsExpandTrigger = '<C-j>'
+        let g:UltiSnipsJumpForwardTrigger = '<C-j>'
+        let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
     " }}}
     " => RainbowParentheses {{{
         autocmd VimEnter *.py RainbowParentheses
@@ -783,7 +705,6 @@ EOF
         " let NERDTreeKeepTreeInNewTab=1
         " let g:nerdtree_tabs_open_on_gui_startup=0
     " }}}
-    
     " => Defx plugin {{{
         map <C-e> :Defx<CR>
         call defx#custom#option('_', {
@@ -803,17 +724,81 @@ EOF
           setl listchars=
 
           " Define mappings
+          " nnoremap <silent><buffer><expr> <CR>
+          " \ defx#do_action('drop')
+          " nnoremap <silent><buffer><expr> C
+          " \ defx#do_action('toggle_columns',
+          " \                'mark:filename:type:size:time')
+          " nnoremap <silent><buffer><expr> yy
+          " \ defx#do_action('yank_path')
+          " nnoremap <silent><buffer><expr> .
+          " \ defx#do_action('toggle_ignored_files')
+          " nnoremap <silent><buffer><expr> q
+          " \ defx#do_action('quit')
+        " endfunction
+        
+          " Define mappings
           nnoremap <silent><buffer><expr> <CR>
-          \ defx#do_action('drop')
+          \ defx#do_action('open')
+          nnoremap <silent><buffer><expr> c
+          \ defx#do_action('copy')
+          nnoremap <silent><buffer><expr> m
+          \ defx#do_action('move')
+          nnoremap <silent><buffer><expr> p
+          \ defx#do_action('paste')
+          nnoremap <silent><buffer><expr> l
+          \ defx#do_action('open')
+          nnoremap <silent><buffer><expr> E
+          \ defx#do_action('open', 'vsplit')
+          nnoremap <silent><buffer><expr> P
+          \ defx#do_action('open', 'pedit')
+          nnoremap <silent><buffer><expr> o
+          \ defx#do_action('open_or_close_tree')
+          nnoremap <silent><buffer><expr> K
+          \ defx#do_action('new_directory')
+          nnoremap <silent><buffer><expr> N
+          \ defx#do_action('new_file')
+          nnoremap <silent><buffer><expr> M
+          \ defx#do_action('new_multiple_files')
           nnoremap <silent><buffer><expr> C
           \ defx#do_action('toggle_columns',
-          \                'mark:filename:type:size:time')
+          \                'mark:indent:icon:filename:type:size:time')
+          nnoremap <silent><buffer><expr> S
+          \ defx#do_action('toggle_sort', 'time')
+          nnoremap <silent><buffer><expr> d
+          \ defx#do_action('remove')
+          nnoremap <silent><buffer><expr> r
+          \ defx#do_action('rename')
+          nnoremap <silent><buffer><expr> !
+          \ defx#do_action('execute_command')
+          nnoremap <silent><buffer><expr> x
+          \ defx#do_action('execute_system')
           nnoremap <silent><buffer><expr> yy
           \ defx#do_action('yank_path')
           nnoremap <silent><buffer><expr> .
           \ defx#do_action('toggle_ignored_files')
+          nnoremap <silent><buffer><expr> ;
+          \ defx#do_action('repeat')
+          nnoremap <silent><buffer><expr> h
+          \ defx#do_action('cd', ['..'])
+          nnoremap <silent><buffer><expr> ~
+          \ defx#do_action('cd')
           nnoremap <silent><buffer><expr> q
           \ defx#do_action('quit')
+          nnoremap <silent><buffer><expr> <Space>
+          \ defx#do_action('toggle_select') . 'j'
+          nnoremap <silent><buffer><expr> *
+          \ defx#do_action('toggle_select_all')
+          nnoremap <silent><buffer><expr> j
+          \ line('.') == line('$') ? 'gg' : 'j'
+          nnoremap <silent><buffer><expr> k
+          \ line('.') == 1 ? 'G' : 'k'
+          nnoremap <silent><buffer><expr> <C-l>
+          \ defx#do_action('redraw')
+          nnoremap <silent><buffer><expr> <C-g>
+          \ defx#do_action('print')
+          nnoremap <silent><buffer><expr> cd
+          \ defx#do_action('change_vim_cwd')
         endfunction
     " }}}
     " => syntastic {{{
@@ -896,8 +881,11 @@ EOF
 
 " my self-system {{{
     if OSX()
-        command! DlogFrame :r !tt history --days 1
-        command! -nargs=1 DlogFrameDate :r !tt history --days <args>
+        command! DlogFrameList :r !tt history --days 1
+        command! DlogFrameSummary :r !tt summary --days 1 --suppress
+        command! DlogFrame :r !tt history --days 1;tt summary --days 1 --suppress
+        " command! -nargs=1 DlogFrameDate :r !tt history --days <args>
+        command! -nargs=1 DlogFrameDate :r !tt history --days <args>;tt summary --days <args> --suppress
     "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -v-1d "+\%Y-\%m-\%d"`
     " else
     "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
@@ -905,6 +893,5 @@ EOF
     " command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start `date -d yesterday +\%Y-\%m-\%d` --end `date -d yesterday +\%Y-\%m-\%d`
     " command! DlogFrame :r !~/bin/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc --days 1 --end 1
     " command! -nargs=1 DlogFrameDate :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start "<args>" --end "<args>"
-
     " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
 " }}}

@@ -84,8 +84,20 @@ function mosht
     # /usr/local/bin/mosh --ssh="ssh -i ~/.ssh/id_rsa -p 7722" zibu@104.128.69.20
 end
 
+function ver
+    #ve relocated
+    source $VIRTUALENV_HOME/$argv/bin/activate.fish
+end
+
+function mkve
+    python3 -m venv $VIRTUALENV_HOME/$argv
+    ln -s $VIRTUALENV_HOME/$argv env
+end
+
 switch (uname)
     case Linux
+        set -gx VIRTUALENV_HOME /mnt/tf/home/virtualenv/
+
         set --local manpath_list ~/bin $JAVA_HOME/bin $PATH 
         set --local manpath_sorted
         for i in $manpath_list
@@ -95,9 +107,31 @@ switch (uname)
         end
         set -gx PATH $manpath_sorted
     case Darwin
+
+        set -gx VIRTUALENV_HOME /Users/dersu/NoBackup/virtualenv/
         # tct (tc tc list --flat | fzf)
         function ttf
-            ttt (tt tasks-list | fzf)
+            tc (t tasks-list | fzf)
+        end
+
+        function ttstart
+            launchctl load  /Users/dersu/Library/LaunchAgents/dersu.timecounter.plist
+        end
+        function ttstop
+            launchctl unload  /Users/dersu/Library/LaunchAgents/dersu.timecounter.plist
+        end
+        function mipc
+            # open 'smb://guest:guest@10.1.0.2/inbox'
+            open 'smb://guest:guest@10.1.0.2/'
+        end
+        function bdso_bd
+            cd /Users/dersu/Projects/201908.BDSO/repo
+            ve
+            python main.py ful_auto_baidu
+        end
+
+        function webdav
+            ~/bin/webdav/webdav -c ~/bin/webdav/config.yaml
         end
 
         # set -gx GOPATH ~/Data/Personal-project/go/
@@ -106,7 +140,7 @@ switch (uname)
         # set -gx JAVAFX_HOME /Library/Java/JavaVirtualMachines/javafx
         # set -gx JAVAFX_LIB $JAVAFX_HOME/lib
         set -gx CLASSPATH $JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
-        set --local manpath_list ~/bin /usr/local/opt/coreutils/libexec/gnubin /usr/local/sbin /usr/local/bin /usr/local/opt/sqlite/bin $JAVA_HOME/bin $PATH 
+        set --local manpath_list ~/bin /usr/local/opt/coreutils/libexec/gnubin /usr/local/sbin /usr/local/bin /usr/local/opt/ruby/bin /usr/local/opt/sqlite/bin $JAVA_HOME/bin $PATH 
         # set --local manpath_list ~/bin /usr/local/sbin /usr/local/opt/coreutils/libexec/gnubin /usr/local/opt/openssl@1.1/bin /usr/local/opt/sqlite/bin /usr/local/opt/sphinx-doc/bin /usr/local/bin/ /usr/local/opt/mysql@5.7/bin $JAVA_HOME/bin $PATH 
         set --local manpath_sorted
         for i in $manpath_list
@@ -121,6 +155,7 @@ switch (uname)
         test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
 
         # status --is-interactive; and source (pyenv init -|psub)
+        #
     case FreeBSD NetBSD DragonFly
         echo Hi Beastie!
     case '*'
