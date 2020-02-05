@@ -218,11 +218,11 @@ install_widgets() {
            env2/bin/pip install -U pip
            env2/bin/pip install pynvim neovim
            env3/bin/pip install -U pip
-           env3/bin/pip install pynvim neovim
+           env3/bin/pip install pynvim neovim jedi
 
            sudo gem install neovim
            sudo npm install -g neovim
-           curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+           # curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
 
            break;;
 

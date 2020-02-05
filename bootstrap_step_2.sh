@@ -154,4 +154,6 @@ msg "CocInstall coc-python coc-emmet coc-snippets"
 msg             "\nThanks for installing $app_name."
 
 
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 # pdftotext mutool
