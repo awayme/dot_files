@@ -1,27 +1,37 @@
-let g:consolidated_directory = $HOME . '/.config/vimfiles/persistence/'
+" Identify platform {
+    silent function! OSX()
+        return has('macunix')
+    endfunction
+    silent function! LINUX()
+        return has('unix') && !has('macunix') && !has('win32unix')
+    endfunction
+    silent function! WINDOWS()
+        return  (has('win32') || has('win64'))
+    endfunction
+" }
+
+if WINDOWS()
+    let $HOME .= '\AppData\Local\'
+endif
+
+let g:consolidated_directory = expand($HOME . '/.config/vimfiles/persistence/')
 
 let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
 
-let plugin_manager_path = $HOME . '/.config/vimfiles/plugins/'
+let plugin_manager_path = expand($HOME . '/.config/vimfiles/plugins/')
 if has('nvim')
-    let g:python_host_prog = $HOME . '/.config/nvim/env2/bin/python'
-    let g:python3_host_prog = $HOME . '/.config/nvim/env3/bin/python'
+    if WINDOWS()
+        let g:python_host_prog = expand($HOME . '/.config/nvim/env2/Scripts/python.exe')
+        let g:python3_host_prog = expand($HOME . '/.config/nvim/env3/Scripts/python.exe')
+	else
+	    let g:python_host_prog = expand($HOME . '/.config/nvim/env2/bin/python')
+        let g:python3_host_prog = expand($HOME . '/.config/nvim/env3/bin/python')
+	endif
 endif
 
 let python_virtualenv = $HOME . '/.config/nvim/env3/'
 
 " Environment {{{
-    " Identify platform {
-        silent function! OSX()
-            return has('macunix')
-        endfunction
-        silent function! LINUX()
-            return has('unix') && !has('macunix') && !has('win32unix')
-        endfunction
-        silent function! WINDOWS()
-            return  (has('win32') || has('win64'))
-        endfunction
-    " }
 
     " Basics {
         set nocompatible        " Must be first line
@@ -33,9 +43,9 @@ let python_virtualenv = $HOME . '/.config/nvim/env3/'
     " Windows Compatible {
         " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
         " across (heterogeneous) systems easier.
-        if WINDOWS()
-          set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
-        endif
+        "if WINDOWS()
+        "  set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+        "endif
     " }
     
     " Arrow Key Fix {
@@ -171,13 +181,13 @@ EOF
         " To specify a different directory in which to place the vimbackup,
         " vimviews, vimundo, and vimswap files/directories
         if exists('g:consolidated_directory')
-            let common_dir = g:consolidated_directory . prefix
+            let common_dir = expand(g:consolidated_directory . prefix)
         else
-            let common_dir = parent . '/.' . prefix
+            let common_dir = expand(parent . '/.' . prefix)
         endif
 
         for [dirname, settingname] in items(dir_list)
-            let directory = common_dir . dirname . '/'
+            let directory = expand(common_dir . dirname . '/')
             if exists("*mkdir")
                 if !isdirectory(directory)
                     call mkdir(directory)
@@ -739,7 +749,7 @@ EOF
         
           " Define mappings
           nnoremap <silent><buffer><expr> <CR>
-          \ defx#do_action('open')
+          \ defx#do_action('drop')
           nnoremap <silent><buffer><expr> c
           \ defx#do_action('copy')
           nnoremap <silent><buffer><expr> m
