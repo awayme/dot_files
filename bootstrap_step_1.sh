@@ -9,6 +9,8 @@ debug_mode='0'
 #[ -z "$VUNDLE_URI" ] && VUNDLE_URI="https://github.com/VundleVim/Vundle.vim.git"
 [ -z "$RANGER_URI" ] && RANGER_URI="https://github.com/ranger/ranger.git"
 
+apps="neovim universal-ctags fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
+
 ############################  BASIC SETUP TOOLS
 msg() {
     printf '%b\n' "$1" >&2
@@ -103,54 +105,27 @@ sync_repo() {
     debug
 }
 
-create_symlinks() {
-    local source_path="$1"
-    local target_path="$2"
-
-    lnif "$source_path/fish/config.fish" "$target_path/.config/omf/init.fish"
-    lnif "$source_path/vim/init.vim"     "$target_path/.vimrc"
-    lnif "$source_path/tmux/tmux.conf"   "$target_path/.tmux.conf"
-    mkdir -p ~/.pip/
-    lnif "$source_path/python/pip.conf"   "$target_path/.pip/pip.conf"
-
-    lnif "$source_path/ranger"   "$target_path/.config/ranger"
-    lnif "$source_path/ranger/rc.conf.linux" "$source_path/ranger/rc.conf"
-    lnif "$source_path/ranger/rifle.conf.linux" "$source_path/ranger/rifle.conf"
-
-    #if program_exists "nvim"; then
-    #    lnif "$source_path/.vim"       "$target_path/.config/nvim"
-    #    lnif "$source_path/.vimrc"     "$target_path/.config/nvim/init.vim"
-    #fi
-
-    ret="$?"
-    success "Setting up configurtion symlinks."
-    debug
-}
-
 install_widgets() {
-    read -p "Install softwares?[y/n] " answer
-
+    read -p "Install $apps?[y/n] " answer
     while true
     do
       case $answer in
-       [yY]* ) echo "INSTALL: neovim universal-ctags fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
-               echo "================================"
+       [yY]* ) echo "================================"
 
-               sudo add-apt-repository ppa:lazygit-team/release -y
-               sudo apt-add-repository ppa:fish-shell/release-2 -y
-               sudo add-apt-repository ppa:aacebedo/fasd -y
-               sudo add-apt-repository ppa:x4121/ripgrep -y
-               sudo apt-add-repository ppa:neovim-ppa/stable -y
+	       #sudo add-apt-repository ppa:hnakamur/universal-ctags -y
+               #sudo add-apt-repository ppa:lazygit-team/release -y
+               #sudo apt-add-repository ppa:fish-shell/release-2 -y
+               #sudo add-apt-repository ppa:x4121/ripgrep -y
+               #sudo apt-add-repository ppa:neovim-ppa/stable -y
 
-               sudo apt-get update
+               #sudo apt-get update
 
-               sudo apt-get install nodejs neovim fish ripgrep fasd lazygit highlight atool bsdtar mediainfo odt2txt cmake -y
-                # yarn 
+               sudo apt-get install $apps -y
 
-	       fd_deb=fd_7.3.0_amd64.deb
-               wget "https://github.com/sharkdp/fd/releases/download/v7.3.0/$fd_deb"
-               sudo dpkg -i $fd_deb
-               rm $fd_deb
+	       #fd_deb=fd_7.3.0_amd64.deb
+               #wget "https://github.com/sharkdp/fd/releases/download/v7.3.0/$fd_deb"
+               #sudo dpkg -i $fd_deb
+               #rm $fd_deb
 
                break;;
 
@@ -205,9 +180,9 @@ install_widgets() {
       case $answer in
        [yY]* ) echo "================================"
 	       mkdir -p ~/.config/vimfiles/persistence
-               mkdir -p ~/.config/nvim/autoload
+           mkdir -p ~/.config/nvim/autoload
 	       curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-	   	    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	   	   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
            cd ~/.config/nvim/autoload 
            ln -s ~/.vim/autoload/plug.vim
@@ -221,7 +196,7 @@ install_widgets() {
            env3/bin/pip install pynvim neovim jedi
 
            sudo gem install neovim
-           sudo npm install -g neovim
+           # sudo npm install -g neovim
            # curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
 
            break;;
@@ -242,14 +217,24 @@ program_must_exist "git"
 #                    "$HOME/.tmux.conf"\
 #                    "$HOME/.zshrc"
 
-echo 'Update .dot repo'
-sync_repo           "$APP_PATH" \
-                    "$REPO_URI" \
-                    "$REPO_BRANCH" \
-                    "$app_name"
+echo "$app_name:"
+read -p "Clone $REPO_URI into $APP_PATH? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]] 
+then 
+	sync_repo           "$APP_PATH" \
+			    "$REPO_URI" \
+			    "$REPO_BRANCH" \
+			    "$app_name"
+fi
 
+read -p "Install personal tools?" -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]] 
+then 
+	install_widgets
+fi
 
-install_widgets
-
+msg "DO THIS MANUALLY, THEN RUN BOOTSTRAP 2"
 msg "curl -L https://get.oh-my.fish | fish"
 msg "omf install fasd"
