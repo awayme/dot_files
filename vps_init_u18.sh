@@ -45,6 +45,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
     sudo apt-get update
     sudo apt-get install -y python-dev python-lxml supervisor git htop multitail tmux software-properties-common libffi-dev libssl-dev libmysqlclient-dev build-essential atool p7zip-full curl python3-venv virtualenv ruby ruby-dev trash-cli
+    #for pyenv build
+    sudo apt-get install --no-install-recommends -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
     # vim-gtk3 nodejs-dev node-gyp 
     # sudo apt-get install -y npm 
 
