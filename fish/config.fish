@@ -94,11 +94,15 @@ function mkve
     ln -s $VIRTUALENV_HOME/$argv env
 end
 
+function svc
+    sudo supervisorctl $argv
+end
+
 switch (uname)
     case Linux
         set -gx VIRTUALENV_HOME /mnt/tf/home/virtualenv/
 
-        set --local manpath_list ~/bin $JAVA_HOME/bin $PATH 
+        set --local manpath_list ~/bin $JAVA_HOME/bin /snap/bin/ $PATH 
         set --local manpath_sorted
         for i in $manpath_list
             if not contains $i $manpath_sorted
