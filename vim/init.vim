@@ -11,25 +11,40 @@
 " }
 
 if WINDOWS()
-    let $HOME .= '\AppData\Local\'
+    "let $HOME .= '\AppData\Local\'
+    let $HOME_VIM = $HOME . '/AppData/Local/vimfiles/'
+else
+    let $HOME_VIM = $HOME . '/.config/vimfiles/'
 endif
 
-let g:consolidated_directory = expand($HOME . '/.config/vimfiles/persistence/')
+"let g:consolidated_directory = expand($HOME . '/.config/vimfiles/persistence/')
+let g:consolidated_directory = expand($HOME_VIM . '/persistence/')
 
-let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
+"let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
+"let g:UltiSnipsMinePath = $HOME_VIM . '/PluginConf/'
+let g:UltiSnipsMinePath = expand($HOME . '/nvim/PluginConf/')
 
-let plugin_manager_path = expand($HOME . '/.config/vimfiles/plugins/')
+" Windows save https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim to
+" $HOME . 'AppData\Local\nvim-data\site\autoload\plug.vim'
+"let plugin_manager_path = expand($HOME . '/.config/vimfiles/plugins/')
+let plugin_manager_path = expand($HOME_VIM . '/plugins/')
+
 if has('nvim')
     if WINDOWS()
-        let g:python_host_prog = expand($HOME . '/.config/nvim/env2/Scripts/python.exe')
-        let g:python3_host_prog = expand($HOME . '/.config/nvim/env3/Scripts/python.exe')
+            "let g:python_host_prog = expand($HOME . '/.config/nvim/env2/Scripts/python.exe')
+            "let g:python3_host_prog = expand($HOME . '/.config/nvim/env3/Scripts/python.exe')
+            let g:python_host_prog = expand($HOME_VIM . '/python/env2/Scripts/python.exe')
+            let g:python3_host_prog = expand($HOME_VIM . '/python/env3/Scripts/python.exe')
 	else
-	    let g:python_host_prog = expand($HOME . '/.config/nvim/env2/bin/python')
-        let g:python3_host_prog = expand($HOME . '/.config/nvim/env3/bin/python')
+            "let g:python_host_prog = expand($HOME . '/.config/nvim/env2/bin/python')
+            "let g:python3_host_prog = expand($HOME . '/.config/nvim/env3/bin/python')
+            let g:python_host_prog = expand($HOME_VIM . '/python/env2/bin/python')
+            let g:python3_host_prog = expand($HOME_VIM . '/python/env3/bin/python')
 	endif
 endif
 
-let python_virtualenv = $HOME . '/.config/nvim/env3/'
+"let python_virtualenv = $HOME . '/.config/nvim/env3/'
+let python_virtualenv = $HOME_VIM . '/python/env3/'
 
 " Environment {{{
 
@@ -132,7 +147,11 @@ EOF
     " set virtualedit=onemore             " Allow for cursor beyond last character
     set history=1000                    " Store a ton of history (default is 20)
     if has('nvim')
-        exec "set shada+=n" . g:consolidated_directory . "main.shada"
+        if !WINDOWS()
+            " 在win下如果执行这个操作，会导致路径中的所有\被删除，无法解决
+            " C:\Users\dersu\AppData\Local\vimfiles\persistence\main.shada
+            exec "set shada+=n" . expand(g:consolidated_directory, "main.shada")
+        endif
     else
         exec "set viminfo+=n" . g:consolidated_directory . "viminfo"
     endif
@@ -167,8 +186,8 @@ EOF
 
     " Initialize directories {
     function! InitializeDirectories()
-        let parent = $HOME
-        let prefix = 'vim'
+        "let parent = $HOME
+        "let prefix = 'vim'
         let dir_list = {
                     \ 'backup': 'backupdir',
                     \ 'views': 'viewdir',
@@ -180,11 +199,12 @@ EOF
 
         " To specify a different directory in which to place the vimbackup,
         " vimviews, vimundo, and vimswap files/directories
-        if exists('g:consolidated_directory')
-            let common_dir = expand(g:consolidated_directory . prefix)
-        else
-            let common_dir = expand(parent . '/.' . prefix)
-        endif
+        "if exists('g:consolidated_directory')
+        "    let common_dir = expand(g:consolidated_directory . prefix)
+        "else
+        "    let common_dir = expand(parent . '/.' . prefix)
+        "endif
+        let common_dir = g:consolidated_directory
 
         for [dirname, settingname] in items(dir_list)
             let directory = expand(common_dir . dirname . '/')
@@ -605,7 +625,7 @@ EOF
 
 " Plugin settings {{{
     " => scheme {{{
-      " colorscheme NeoSolarized
+      colorscheme NeoSolarized
     " }}}
     " => unite {{{
         " let g:unite_source_history_yank_enable=1
