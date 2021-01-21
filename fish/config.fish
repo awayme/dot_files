@@ -100,9 +100,13 @@ end
 
 switch (uname)
     case Linux
-        set -gx VIRTUALENV_HOME /mnt/tf/home/virtualenv/
+        set -gx VIRTUALENV_HOME ~/lib/virtualenv/
+        # function ttf
+        #     tc (t tasks-list | fzf)
+        # end
 
         set --local manpath_list ~/bin $JAVA_HOME/bin /snap/bin/ $PATH 
+        # set --local manpath_list ~/bin $JAVA_HOME/bin /snap/bin/ /home/dersu/.fzf/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin 
         set --local manpath_sorted
         for i in $manpath_list
             if not contains $i $manpath_sorted
@@ -110,13 +114,19 @@ switch (uname)
             end
         end
         set -gx PATH $manpath_sorted
+        function ttstart
+            svc start driller
+        end
+        function ttstop
+            svc stop driller
+        end
     case Darwin
 
         set -gx VIRTUALENV_HOME /Users/dersu/NoBackup/virtualenv/
         # tct (tc tc list --flat | fzf)
-        function ttf
-            tc (t tasks-list | fzf)
-        end
+        # function ttf
+        #     tc (t tasks-list | fzf)
+        # end
 
         function ttstart
             launchctl load  /Users/dersu/Library/LaunchAgents/dersu.timecounter.plist

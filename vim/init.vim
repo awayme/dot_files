@@ -551,7 +551,7 @@ EOF
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
     Plug 'iCyMind/NeoSolarized'
-    "
+
     Plug 'Yggdroot/LeaderF'
 
     " Edit
@@ -565,7 +565,7 @@ EOF
     endif
     Plug 'https://github.com/kshenoy/vim-signature'  "Plugin to toggle, display and navigate marks
     Plug 'https://github.com/junegunn/rainbow_parentheses.vim'
-    Plug 'https://github.com/mhinz/vim-grepper.git'
+    " Plug 'https://github.com/mhinz/vim-grepper.git'
     Plug 'https://github.com/Yggdroot/indentLine'
     " Plug 'terryma/vim-multiple-cursors'
     Plug 'mg979/vim-visual-multi'
@@ -605,7 +605,7 @@ EOF
 
 " Plugin settings {{{
     " => scheme {{{
-      colorscheme NeoSolarized
+      " colorscheme NeoSolarized
     " }}}
     " => unite {{{
         " let g:unite_source_history_yank_enable=1
@@ -890,18 +890,10 @@ EOF
 " }}}
 
 " my self-system {{{
-    if OSX()
-        command! DlogFrameList :r !tt history --days 1
-        command! DlogFrameSummary :r !tt summary --days 1 --suppress
-        command! DlogFrame :r !tt history --days 1;tt summary --days 1 --suppress
-        " command! -nargs=1 DlogFrameDate :r !tt history --days <args>
-        command! -nargs=1 DlogFrameDate :r !tt history --days <args>;tt summary --days <args> --suppress
-    "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -v-1d "+\%Y-\%m-\%d"`
-    " else
-    "     command! DlogFrame :r !~/Data/scripts/Self-productive/timecamp/env/bin/python ~/Data/scripts/Self-productive/timecamp/timecamp.py -e --startdate `date -d yesterday +\%Y-\%m-\%d`
+    if LINUX()
+        command! DlogFrameList :r !tt pg_history --days 1
+        command! DlogFrameSummary :r !tt pg_summary --days 1 --suppress
+        command! DlogFrame :r !tt pg_history --days 1;tt pg_summary --days 1 --suppress
+        command! -nargs=1 DlogFrameDate :r !tt pg_history --days <args>;tt pg_summary --days <args> --suppress
     endif
-    " command! DlogFrame :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start `date -d yesterday +\%Y-\%m-\%d` --end `date -d yesterday +\%Y-\%m-\%d`
-    " command! DlogFrame :r !~/bin/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc --days 1 --end 1
-    " command! -nargs=1 DlogFrameDate :r !~/Data/Personal-project/Self-productive/env/bin/python ~/Data/Personal-project/Self-productive/timecamp/tc.py tc-query --start "<args>" --end "<args>"
-    " command! DlogFrame :r !~/Data/My_Scripts/Self-productive/timecamp/env/bin/python ~/Data/My_Scripts/Self-productive/timecamp/timecamp.py -e --startdate "strftime("%Y%m%d")"
 " }}}
