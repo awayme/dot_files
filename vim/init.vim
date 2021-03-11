@@ -14,7 +14,7 @@ if WINDOWS()
     "let $HOME .= '\AppData\Local\'
     let $HOME_VIM = $HOME . '/AppData/Local/vimfiles/'
 else
-    let $HOME_VIM = $HOME . '/.config/vimfiles/'
+    let $HOME_VIM = $HOME . '/.config/vimfiles'
 endif
 
 "let g:consolidated_directory = expand($HOME . '/.config/vimfiles/persistence/')
@@ -150,7 +150,7 @@ EOF
         if !WINDOWS()
             " 在win下如果执行这个操作，会导致路径中的所有\被删除，无法解决
             " C:\Users\dersu\AppData\Local\vimfiles\persistence\main.shada
-            exec "set shada+=n" . expand(g:consolidated_directory, "main.shada")
+            exec "set shada+=n" . expand(g:consolidated_directory . "main.shada")
         endif
     else
         exec "set viminfo+=n" . g:consolidated_directory . "viminfo"

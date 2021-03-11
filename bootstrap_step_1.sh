@@ -113,12 +113,12 @@ install_widgets() {
        [yY]* ) echo "================================"
 
 	       #sudo add-apt-repository ppa:hnakamur/universal-ctags -y
-               #sudo add-apt-repository ppa:lazygit-team/release -y
+               sudo add-apt-repository ppa:lazygit-team/release -y
                #sudo apt-add-repository ppa:fish-shell/release-2 -y
                #sudo add-apt-repository ppa:x4121/ripgrep -y
                #sudo apt-add-repository ppa:neovim-ppa/stable -y
 
-               #sudo apt-get update
+               sudo apt-get update
 
                sudo apt-get install $apps -y
 
