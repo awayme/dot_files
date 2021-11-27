@@ -9,7 +9,7 @@ debug_mode='0'
 #[ -z "$VUNDLE_URI" ] && VUNDLE_URI="https://github.com/VundleVim/Vundle.vim.git"
 [ -z "$RANGER_URI" ] && RANGER_URI="https://github.com/ranger/ranger.git"
 
-apps="neovim universal-ctags fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
+apps="neovim universal-ctags fish fasd ripgrep lazygit highlight atool libarchive-tools mediainfo odt2txt cmake"
 
 ############################  BASIC SETUP TOOLS
 msg() {
@@ -186,7 +186,8 @@ install_widgets() {
            cd ~/.config/nvim/autoload 
            ln -s ~/.vim/autoload/plug.vim
 
-           cd ~/.config/nvim/
+           mkdir -p ~/.config/vimfiles/python/
+           cd ~/.config/vimfiles/python/
            virtualenv env2
            python3 -m venv env3
            env2/bin/pip install -U pip
