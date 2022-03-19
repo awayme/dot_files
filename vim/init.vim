@@ -21,8 +21,9 @@ endif
 let g:consolidated_directory = expand($HOME_VIM . '/persistence/')
 
 "let g:UltiSnipsMinePath = $HOME . '/.config/vimfiles/PluginConf/'
-"let g:UltiSnipsMinePath = $HOME_VIM . '/PluginConf/'
-let g:UltiSnipsMinePath = expand($HOME . '/nvim/PluginConf/')
+if WINDOWS()
+    let g:UltiSnipsMinePath = expand($HOME . '/AppData/Local/nvim/PluginConf/')
+endif
 
 " Windows save https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim to
 " $HOME . 'AppData\Local\nvim-data\site\autoload\plug.vim'
