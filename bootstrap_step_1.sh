@@ -9,7 +9,7 @@ debug_mode='0'
 #[ -z "$VUNDLE_URI" ] && VUNDLE_URI="https://github.com/VundleVim/Vundle.vim.git"
 [ -z "$RANGER_URI" ] && RANGER_URI="https://github.com/ranger/ranger.git"
 
-apps="neovim universal-ctags fish fasd ripgrep lazygit highlight atool bsdtar mediainfo odt2txt cmake"
+apps="neovim universal-ctags fish fasd ripgrep lazygit highlight atool libarchive-tools mediainfo odt2txt cmake"
 
 ############################  BASIC SETUP TOOLS
 msg() {
@@ -111,14 +111,13 @@ install_widgets() {
     do
       case $answer in
        [yY]* ) echo "================================"
+               sudo add-apt-repository ppa:hnakamur/universal-ctags -y
+               sudo add-apt-repository ppa:lazygit-team/release -y
+               sudo apt-add-repository ppa:fish-shell/release-2 -y
+               sudo add-apt-repository ppa:x4121/ripgrep -y
+               sudo apt-add-repository ppa:neovim-ppa/stable -y
 
-	       #sudo add-apt-repository ppa:hnakamur/universal-ctags -y
-               #sudo add-apt-repository ppa:lazygit-team/release -y
-               #sudo apt-add-repository ppa:fish-shell/release-2 -y
-               #sudo add-apt-repository ppa:x4121/ripgrep -y
-               #sudo apt-add-repository ppa:neovim-ppa/stable -y
-
-               #sudo apt-get update
+               sudo apt-get update
 
                sudo apt-get install $apps -y
 
@@ -187,7 +186,8 @@ install_widgets() {
            cd ~/.config/nvim/autoload 
            ln -s ~/.vim/autoload/plug.vim
 
-           cd ~/.config/nvim/
+           mkdir -p ~/.config/vimfiles/python/
+           cd ~/.config/vimfiles/python/
            virtualenv env2
            python3 -m venv env3
            env2/bin/pip install -U pip
