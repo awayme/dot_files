@@ -581,14 +581,14 @@ EOF
         Plug 'ncm2/ncm2-bufword'
         Plug 'ncm2/ncm2-path'
         Plug 'filipekiss/ncm2-look.vim'
-        Plug 'ncm2/ncm2-gtags'
+        " Plug 'ncm2/ncm2-gtags'
         Plug 'ncm2/ncm2-html-subscope'
         Plug 'ncm2/ncm2-jedi'
         Plug 'ncm2/ncm2-ultisnips'
         Plug 'SirVer/ultisnips'
         Plug 'honza/vim-snippets'
     endif
-    Plug 'ludovicchabant/vim-gutentags'
+    " Plug 'ludovicchabant/vim-gutentags'
     " Developement
     Plug 'gorodinskiy/vim-coloresque'  "color preview for vim.
     " Plug 'mattn/emmet-vim' "support for expanding abbreviations similar to emmet
