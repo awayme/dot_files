@@ -39,17 +39,6 @@ end
 #
 alias supervisorctl "supervisorctl -c /usr/local/etc/supervisor/supervisord.conf"
 
-function v
-    source (string trim -r -c / $argv[1])/bin/activate.fish
-    # if set -q argv[2] 
-    #     echo $argv[2]
-    # end
-end
-
-function ve
-    source env/bin/activate.fish
-end
-
 # function vetimecamp
 #     cd ~/Projects/Self-productive
 #     ve
@@ -84,6 +73,18 @@ function mosht
     # /usr/local/bin/mosh --ssh="ssh -i ~/.ssh/id_rsa -p 7722" zibu@104.128.69.20
 end
 
+function v
+    source (string trim -r -c / $argv[1])/bin/activate.fish
+    # if set -q argv[2] 
+    #     echo $argv[2]
+    # end
+end
+
+function ve
+    source env/bin/activate.fish
+end
+
+
 function ver
     #ve relocated
     source $VIRTUALENV_HOME/$argv/bin/activate.fish
@@ -105,7 +106,7 @@ switch (uname)
         #     tc (t tasks-list | fzf)
         # end
 
-        set --local manpath_list ~/bin $JAVA_HOME/bin /snap/bin/ $PATH 
+        set --local manpath_list ~/bin $JAVA_HOME/bin /snap/bin/ $PATH /mnt/c/Users/dersu/AppData/Local/Programs/Microsoft\ VS\ Code/bin/
         # set --local manpath_list ~/bin $JAVA_HOME/bin /snap/bin/ /home/dersu/.fzf/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin 
         set --local manpath_sorted
         for i in $manpath_list
@@ -115,10 +116,10 @@ switch (uname)
         end
         set -gx PATH $manpath_sorted
         function ttstart
-            svc start driller
+            svc start driller_server
         end
         function ttstop
-            svc stop driller
+            svc stop driller_server
         end
     case Darwin
 
