@@ -626,7 +626,7 @@ EOF
 
 " Plugin settings {{{
     " => scheme {{{
-      colorscheme NeoSolarized
+      " colorscheme NeoSolarized
     " }}}
     " => unite {{{
         " let g:unite_source_history_yank_enable=1
